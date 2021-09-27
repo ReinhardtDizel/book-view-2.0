@@ -1,13 +1,61 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.headRow{
+    background-color: darkgrey;
+}
+.headCol1{
+    background-color: darkcyan;
+}
+.headCol2{
+    background-color: cornflowerblue;
+}
+.BooksRow{
+    background-color: whitesmoke;
+}
+.BooksCol1{
+    background-color: darkkhaki;
+}
+.BooksCol12{
+    scroll-behaviour: smooth;
+}
+.BooksCol3{
+    background-color: indianred;
+}
+@media (min-width: 768px) {
+    .container {
+        max-width: 100%;
+    }
+}
+@media (min-width: 576px) {
+    .container {
+        max-width: 100%;
+    }
+}
+.container{
+    padding-right: 0rem;
+    padding-left: 0rem;
+    margin-right: 0rem;
+    margin-left: 0rem;
+}
+.bookCard{
+    padding-right: 0rem;
+    padding-left: 1rem;
+    margin-right: 0rem;
+    margin-left: 0rem;
+    color: black;
+    width: 15rem;
+}
+.linkBook{
+    padding-right: 0rem;
+    padding-left: 1rem;
+    margin-right: 0rem;
+    margin-left: 0rem;
+}
+.Editor-bookImage,.Presentation-bookImage{
+    width: 15rem;
+}
+.EditorCard-1,.PresentationCard-1{
+    width: 50rem;
+}
+.mb-4 {
+    width: auto;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
