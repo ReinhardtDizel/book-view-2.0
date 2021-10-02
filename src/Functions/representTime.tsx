@@ -2,7 +2,7 @@ import rusMonth from "../Locales/Rus";
 
 export function representTime(d: Date | undefined) {
     if(d == undefined) {
-        return null;
+        return undefined;
     }
     let date: string = d as unknown as string;
     date = date.substring(0,10);

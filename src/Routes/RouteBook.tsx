@@ -1,93 +1,52 @@
 import * as React from "react";
-import {Card, Col, Row, Table} from "react-bootstrap";
-import {Author} from "../Models/Author";
-import {representTime} from "../Functions/representTime";
 import PresentationBook from "../Components/Presentation-book";
-import {Route, Switch} from "react-router-dom";
+import {Route, RouteComponentProps, Switch} from "react-router-dom";
 import EditorBook from "../Components/Editor-book";
+import {Book} from "../Models/Book";
 
 const Link = require("react-router-dom").Link;
 
 interface Props {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    description?: string;
-    publishing?: Date;
-    image?: string;
-    handler?: () => void;
+    save?: () => any;
+    handler?: (e:any) => void;
+    book?: Book;
 }
 interface State {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    publishing?: Date;
-    description?: string;
-    image?: string;
 }
 
 
-export default class RouteBook extends React.Component<Props, State>{
-    constructor(props: Props) {
+export default class RouteBook extends React.Component<Props & RouteComponentProps, State>{
+    constructor(props: Props & RouteComponentProps) {
         super(props);
         this.state = {
-            title: '',
-            authors: [] as Author[],
-            description: '',
-            publishing: undefined,
-            image: '',
         };
     }
 
-    authorsShow = (authors?:Author[]) => {
-        return (
-            authors!== null && authors !== undefined)
-            ? authors.map(
-                (author) => {
-                    return(
-                        <td>
-                            {author.name?.fullName} &nbsp;&nbsp;
-                        </td>
-                    )
-                }
-            ):null
-    }
+
 
     render() {
         const {
-            id,
-            title,
-            publishing,
-            description,
-            authors,
-            image,
-            handler
+            book,
+            handler,
         } = this.props;
         return(
 
             <Switch>
-                <Route exact={true} path="/b/:title">
+                <Route exact={true} path="/b/:id">
                     <PresentationBook
-                        id={id}
-                        title={title}
-                        publishing={publishing}
-                        authors={authors}
-                        description={description}
-                        image={image}
+                        book={book}
+                        handler={handler}
+                        history={this.props.history}
                     >
                     </PresentationBook>
                 </Route>
-                <Route exact={true} path="/b/to-edit/:id">
+                <Route exact={true} path="/b/to-edit/:id" >
                     <EditorBook
-                        id={id}
-                        title={title}
-                        publishing={publishing}
-                        authors={authors}
-                        description={description}
-                        image={image}
+                        book={book}
                         handler={handler}
                     >
                     </EditorBook>
+                    <Route path="/b/to-save/:id"></Route>
                 </Route>
             </Switch>
         )

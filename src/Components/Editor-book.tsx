@@ -1,23 +1,25 @@
 import * as React from "react";
-import {Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
+import {Button, Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
+import Form from 'react-bootstrap/Form'
 import {Author} from "../Models/Author";
+import {Book} from "../Models/Book";
+import EditorAuthor, {AuthorInterface} from "./Editor-author";
+
 
 const Link = require("react-router-dom").Link;
 
+
 interface Props {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    description?: string;
-    publishing?: Date;
-    image?: string;
-    handler?: () => void;
+    save?: () => any;
+    book?:Book;
+    handler?: (e:any) => any;
 }
 interface State {
+    book?: Book;
     id?:string;
     title?: string;
     authors?: Author[];
-    publishing?: Date;
+    publishing?: Date
     description?: string;
     image?: string;
 }
@@ -27,6 +29,7 @@ export default class EditorBook extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
+            book: this.props.book,
             title: '',
             authors: [] as Author[],
             description: '',
@@ -36,81 +39,96 @@ export default class EditorBook extends React.Component<Props, State>{
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
+    authorChange = (author: Author) => {
+        const {authors} = this.state;
+        console.log(author.name?.firstName);
+    }
+
     handleInputChange = (event: any):void => {
         const { name, value } = event.target;
-        if( name == 'title' || 'author' || 'description' || 'publishing' ||  'image') {
+        if( name == 'title' || 'description' || 'image') {
             this.setState({
                 [name]: value,
+            } as any);
+        }
+    }
+
+    authorAdd = () => {
+       let author: Author = {
+           id: "",
+           name: {
+               fullName: '',
+               firstName: '',
+               middleName: '',
+               shortName: '',
+               lastName: '',
+           },
+           bio: "",
+       }
+       let authors: Author[] | undefined = this.state.authors;
+       if(authors != undefined && authors.length <= 10) {
+           authors.push(author);
+           this.setState({
+               authors: authors,
+           });
+       }
+    }
+
+    authorRemove = () => {
+        let authors: Author[] | undefined = this.state.authors;
+        if(authors != undefined && authors.length > 0) {
+            authors.pop();
+            this.setState({
+                authors: authors,
             });
         }
     }
 
-    authorsShow = (authors?:Author[]) => {
+    authorsCreate = (authors?:Author[]) => {
         return (
             authors!== null && authors !== undefined)
             ? authors.map(
                 (author) => {
                     return(
-                        <td>
-                            {author.name?.fullName} &nbsp;&nbsp;
-                        </td>
-                    )
-                }
-            ):null
-    }
+                        <EditorAuthor
+                            authorInterface={AuthorInterface.FULL}
+                            author={author}
+                        />
 
-    authorCreate = (authors?:Author[]) => {
-        return (
-            authors!== null && authors !== undefined)
-            ? authors.map(
-                (author) => {
-                    return(
-                        <Card.Text key={author.id}>
-                            <InputGroup size="sm" className="mb-1">
-                                <InputGroup.Text id="inputGroup-sizing-default">{author.name?.lastName}</InputGroup.Text>
-                                <FormControl
-                                    value={author.name?.fullName}
-                                    onChange={this.handleInputChange}
-                                    name="author"
-                                    aria-label="Default"
-                                    aria-describedby="inputGroup-sizing-default"
-                                />
-                            </InputGroup>
-                        </Card.Text>
                     )
                 }
             ):null
     }
 
     componentWillMount() {
-        const value = this.props;
-        console.log(value)
-        if (value !== undefined && value !== null ) {
+        const {book} = this.props;
+        if (book !== undefined && book !== null ) {
             this.setState({
-                title: value.title,
-                authors: value.authors,
-                publishing: value.publishing,
-                description: value.description,
-                image: value.image,
+                title: book.title,
+                authors: book.authors,
+                publishing: book.publishing,
+                description: book.description,
+                image: book.image,
             });
         }
     }
 
     componentDidMount() {
-        const value = this.props;
-        if (value !== undefined && value !== null ) {
+        const {book} = this.props;
+        if (book !== undefined && book !== null ) {
             this.setState({
-                title: value.title,
-                authors: value.authors,
-                publishing: value.publishing,
-                description: value.description,
-                image: value.image,
+                title: book.title,
+                authors: book.authors,
+                publishing: book.publishing,
+                description: book.description,
+                image: book.image,
             });
         }
     }
 
     render() {
         const {
+            book,
             title,
             publishing,
             description,
@@ -125,7 +143,7 @@ export default class EditorBook extends React.Component<Props, State>{
                     </Card.Img>
                 </Col>
                 <Col xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
-                    <Card className={'EditorCard-1'}>
+                    <Card className={'EditorCard-1'} style={{backgroundColor:"ghostwhite"}}>
                         <Card.Body>
                             <Card.Text key={"Title"}>
                                 <InputGroup size="sm" className="mb-0">
@@ -139,9 +157,6 @@ export default class EditorBook extends React.Component<Props, State>{
                                     />
                                 </InputGroup>
                             </Card.Text>
-                            <Card.Text key={"publishing"}>
-                                {this.authorCreate(authors)}
-                            </Card.Text>
                             <Card.Text key={"Publishing Date"}>
                                 <InputGroup size="sm" className="mb-3">
                                     <InputGroup.Text id="inputGroup-sizing-default">Publishing</InputGroup.Text>
@@ -149,18 +164,6 @@ export default class EditorBook extends React.Component<Props, State>{
                                         value={publishing?.toString()}
                                         onChange={this.handleInputChange}
                                         name="publishing"
-                                        aria-label="Default"
-                                        aria-describedby="inputGroup-sizing-default"
-                                    />
-                                </InputGroup>
-                            </Card.Text>
-                            <Card.Text key={"Description"}>
-                                <InputGroup size="sm" className="mb-4">
-                                    <InputGroup.Text id="inputGroup-sizing-default">Description</InputGroup.Text>
-                                    <FormControl
-                                        value={description}
-                                        onChange={this.handleInputChange}
-                                        name="description"
                                         aria-label="Default"
                                         aria-describedby="inputGroup-sizing-default"
                                     />
@@ -178,10 +181,52 @@ export default class EditorBook extends React.Component<Props, State>{
                                     />
                                 </InputGroup>
                             </Card.Text>
-                            <Card.Text key={"Back"}>
-                                <Link to={`/b/:title`} style={{ textDecoration: 'none' }}>Back</Link>
+                            <Card.Text key={"Description"}>
+                                <>
+                                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                    <Form.Label>Book Description:</Form.Label>
+                                    <Form.Control as="textarea" rows={3}
+                                                  defaultValue={description}
+                                                  onChange={this.handleInputChange}
+                                                  name="description"
+                                    />
+                                </Form.Group>
+                                </>
+                            </Card.Text>
+                            <Card.Text>
+                                <Col>
+                                    <Button
+                                        onClick={this.authorRemove}
+                                        className='removeAdd'
+                                        size="sm"
+                                        variant="Light"
+                                    >
+                                        &nbsp;-&nbsp;
+                                    </Button>
+                                    <Button variant="secondary" size="sm" disabled>
+                                        Author
+                                    </Button>
+                                    <Button
+                                        onClick={this.authorAdd}
+                                        className='authorAdd'
+                                        size="sm"
+                                        variant="Light"
+                                    >
+                                        +
+                                    </Button>
+                                </Col>
+                            </Card.Text>
+
+                            {this.authorsCreate(authors)}
+
+                        </Card.Body>
+
+                        <Card.Body>
+                            <Card.Text key={"Links"}>
+                                <Link to={`/`} style={{ textDecoration: 'none' }}>Back</Link>
                             </Card.Text>
                         </Card.Body>
+
                     </Card>
                 </Col>
             </Row>

@@ -1,31 +1,21 @@
 import * as React from "react";
 import {Route, RouteComponentProps, Switch} from "react-router-dom";
 
-import {Author} from "./Models/Author";
 import {Book} from "./Models/Book";
 
 import {Col, Container, Row} from "react-bootstrap";
 import RouteBook from "./Routes/RouteBook"
-import {getBooks} from "./Api/Api";
+import {getBookById, getBooks} from "./Api/Api";
 import BooksTable from "./Components/BooksTable";
 
 
+
+
 export interface Props {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    publishing?: Date;
-    imageSource?: string;
 }
 export interface State {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    publishing?: Date;
-    description?: string;
-    image?: string;
-    books?: Book[] | null;
-    isLoading: boolean;
+    book?: Book;
+    books?: Book[];
 }
 
 export default class App extends React.Component<Props & RouteComponentProps , State> {
@@ -33,22 +23,16 @@ export default class App extends React.Component<Props & RouteComponentProps , S
         super(props);
         //console.dir(props);
         this.state = {
-            id: this.searchLink(),
-            title: '',
-            authors: [] as Author[],
-            publishing: undefined,
-            description: '',
-            image: '',
             books: [] as Book[],
-            isLoading: false,
+            book: undefined,
         };
     }
 
-    findSelectedRow =(event:any): any => {
+    findSelectedRow =(id:string | undefined): Book | undefined => {
         let {books}  = this.state;
         let selected: Book | undefined;
         if(books!== undefined && books !== null) {
-            selected = books.find(e => e.id === event);
+            selected = books.find(e => e.id === id);
             if (selected !== undefined && selected !== null) {
                 return selected;
             }
@@ -59,70 +43,63 @@ export default class App extends React.Component<Props & RouteComponentProps , S
             return undefined;
     }
 
-    updateBooks(e:boolean) {
+    setBook = (ID:string | undefined) => {
+        const id: string | undefined = ID;
+        if (id !== undefined && id !== null) {
+            getBookById(id).then(res => {
+                if (res !== null && res !== undefined) {
+                    this.setState({
+                        book: res.data,
+                    });
+                }
+                else
+                    alert("res == null && res == undefined")
+            });
+        }
+    }
+
+    updateBooks = () => {
         getBooks().then(res => {
             if (res!== null && res !== undefined) {
                 this.setState({
                     books: res.data,
                 });
-
-                if(e || this.state.id != undefined){
-                    const {id} = this.state;
-                    const selected: Book = res.data.find( (r: { id: string | undefined; }) => r.id === id );
-                    this.setState({
-                        title: selected.title,
-                        publishing: selected.publishing,
-                        image: selected.image,
-                        authors: selected.authors,
-                        description: selected.description,
-                    });
-                }
             }
-        } );
+        });
     }
 
     openBookDetailsView = (): void => {
-            let search = this.searchLink();
-            const selected = this.findSelectedRow(search);
-            this.setState({
-                title: selected.title,
-                publishing: selected.publishing,
-                image: selected.image,
-                authors: selected.authors,
-                description: selected.description,
-            });
+        const id:string | undefined = this.searchLink();
+        this.setBook(id);
     }
 
-    searchLink = () => {
+    searchLink = ():string | undefined=> {
         let search = this.props.history.location.search || undefined;
         if(search != undefined && search != null) {
             search = search.replaceAll('?id=', '');
-            this.setState({
-               id: search,
-            });
-            return search;
+            search = search.replaceAll('to-edit/', '');
+            return search as string;
         }
     }
 
+    getData = (id:string) => {
+        this.setBook(id);
+    }
+
+    componentDidUpdate() {
+
+    }
+
     componentWillMount() {
-        if(this.props.history.location.pathname != "/") {
-            console.log(this.props.history.location.pathname)
-            this.searchLink();
-        }
-        this.updateBooks(false);
+        this.updateBooks();
 
     }
 
     render() {
 
         const {
-            id,
+            book,
             books,
-            description,
-            title,
-            publishing,
-            authors,
-            image,
         } = this.state;
         return (
                 <Switch>
@@ -145,14 +122,11 @@ export default class App extends React.Component<Props & RouteComponentProps , S
                             <Route path="/b/:id"
                                              render={ () => (
                                                  <RouteBook
-                                                     id={id}
-                                                     title={title}
-                                                     publishing={publishing}
-                                                     authors={authors}
-                                                     image={image}
-                                                     description={description}
-                                                     handler={() => {}}
-                                                 >
+                                                     book={book}
+                                                     handler={this.getData}
+                                                     history={this.props.history}
+                                                     location={this.props.location}
+                                                     match={this.props.match}>
                                                  </RouteBook>
                                              )}/>
                             <Col className="BooksCol3"xs={"auto"}>
