@@ -2,23 +2,17 @@ import * as React from "react";
 import {Card, Col, Row} from "react-bootstrap";
 import {Author} from "../Models/Author";
 import {representTime} from "../Functions/representTime";
+import {Book} from "../Models/Book";
 
 const Link = require("react-router-dom").Link;
 
 interface Props {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    description?: string;
-    publishing?: Date;
-    image?: string;
+    handler?: (e:any) => void;
+    history: any;
+    book?: Book;
 }
 interface State {
-    id?:string;
-    title?: string;
-    authors?: Author[];
-    publishing?: Date;
-    description?: string;
+    book?: Book;
     image?: string;
 }
 
@@ -27,12 +21,26 @@ export default class PresentationBook extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
-            title: '',
-            authors: [] as Author[],
-            description: '',
-            publishing: undefined,
-            image: '',
+            book: undefined,
         };
+    }
+
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
+        if (this.props.book == undefined) {
+            let search = this.props.history.location.search;
+            this.getData(search.replaceAll('?id=', ''));
+        }
+    }
+
+    componentWillMount() {
+    }
+
+    getData = (query:any) =>  {
+        query = query.replaceAll('/b/', '');
+        const {handler} = this.props;
+        if(handler !== undefined && handler != null) {
+            handler(query);
+        }
     }
 
     authorsShow = (authors?:Author[]) => {
@@ -51,43 +59,35 @@ export default class PresentationBook extends React.Component<Props, State>{
 
     render() {
         const {
-            id,
-            title,
-            publishing,
-            description,
-            authors,
-            image,
+          book,
         } = this.props;
-
         return(
             <Row className={'PresentationContainer'}>
                 <Col className={'Presentation-bookImage'} xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
-                    <Card.Img variant="top" src={image}>
+                    <Card.Img variant="top" src={book?.image}>
                     </Card.Img>
-                    <Card.Body>
-                    </Card.Body>
                 </Col>
                 <Col xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
                     <Card className={'PresentationCard-1'}>
                         <Card.Body>
                             <Card.Text key={"Title"}>
-                                {title}
+                                {book?.title}
                             </Card.Text>
                             <Card.Text key={"Author"}>
-                                {this.authorsShow(authors)}
+                                {this.authorsShow(book?.authors)}
                             </Card.Text>
                             <Card.Text key={"Publishing Date"}>
-                                {representTime(publishing)}
+                                {representTime(book?.publishing)}
                             </Card.Text>
                             <Card.Text key={"Description"}>
-                                {description}
+                                {book?.description}
                             </Card.Text>
                             <Card.Text key={"Image URL"}>
-                                {image}
+                                {book?.image}
                             </Card.Text>
                             <Card.Text key={"Back"}>
                                 <Link to={`/`} style={{ textDecoration: 'none' }}>Back</Link> &nbsp;&nbsp;
-                                <Link to={{pathname:`/b/to-edit/${id}`, search:`?id=${id}`}}
+                                <Link to={{pathname:`/b/to-edit/${book?.id}`, search:`?id=${book?.id}`}}
                                       style={{ textDecoration: 'none' }}
                                 >
                                     Edit

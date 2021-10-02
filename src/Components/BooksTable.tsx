@@ -6,19 +6,13 @@ import {Book} from "../Models/Book";
 
 
 interface Props {
-    id?: string;
-    title?: string;
-    authors?: Author[];
-    description?: string;
-    publishing?: Date | undefined;
-    image?: string;
     imgSize?: string;
     handler?: (e:any) => void;
     books?: Book[] | null;
 }
 
 interface State {
-    book?: Book[] | null;
+    books?: Book[] | null;
     selectedId?: string;
 }
 
@@ -26,7 +20,7 @@ export default class BooksTable extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            book: [] as Book[],
+            books: [] as Book[],
         }
     }
 
@@ -50,12 +44,7 @@ export default class BooksTable extends React.Component<Props, State> {
                             return(
                             <BookRow
                                 key={ book.id }
-                                id={ book.id }
-                                title={ book.title }
-                                publishing={ book.publishing }
-                                authors={ book.authors }
-                                description={ book.description }
-                                image={ book.image }
+                                book={book}
                                 handler={ this.handler }
                             />
                             )

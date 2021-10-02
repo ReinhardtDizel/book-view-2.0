@@ -12,7 +12,11 @@ axios.create({
 
 export const getBooks = async () => {
     const data = await axios.get(booksDataURL);
-    debugger;
+    return data;
+}
+
+export const  getBookById = async (id:string) => {
+    const data = await axios.get(booksDataURL + id.replaceAll('?id=', ''));
     return data;
 }
 
