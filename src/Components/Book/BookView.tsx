@@ -1,8 +1,8 @@
 import * as React from "react";
-import {Card, Col, Row} from "react-bootstrap";
-import {Author} from "../Models/Author";
-import {representTime} from "../Functions/representTime";
-import {Book} from "../Models/Book";
+import {Card, Col, Row, Button} from "react-bootstrap";
+import {Author} from "../../Models/Author";
+import {representTime} from "../../Functions/representTime";
+import {Book} from "../../Models/Book";
 
 const Link = require("react-router-dom").Link;
 
@@ -17,7 +17,7 @@ interface State {
 }
 
 
-export default class PresentationBook extends React.Component<Props, State>{
+export default class BookView extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -76,22 +76,38 @@ export default class PresentationBook extends React.Component<Props, State>{
                             <Card.Text key={"Author"}>
                                 {this.authorsShow(book?.authors)}
                             </Card.Text>
-                            <Card.Text key={"Publishing Date"}>
+                            <Card.Text key={"PublishingDate"}>
                                 {representTime(book?.publishing)}
                             </Card.Text>
                             <Card.Text key={"Description"}>
                                 {book?.description}
                             </Card.Text>
-                            <Card.Text key={"Image URL"}>
+                            <Card.Text key={"ImageURL"}>
                                 {book?.image}
                             </Card.Text>
-                            <Card.Text key={"Back"}>
-                                <Link to={`/`} style={{ textDecoration: 'none' }}>Back</Link> &nbsp;&nbsp;
-                                <Link to={{pathname:`/b/to-edit/${book?.id}`, search:`?id=${book?.id}`}}
-                                      style={{ textDecoration: 'none' }}
+                            <Card.Text key={"links"}>
+                                <Button variant="link"
+                                        className='BackButton'
+                                        size="sm"
                                 >
-                                    Edit
-                                </Link>
+                                    <Link to={`/`} style={{ textDecoration: 'none' }}>Back</Link>
+                                </Button>
+                                <Button variant="link"
+                                        className='EditButton'
+                                        size="sm"
+                                >
+                                    <Link
+                                        to={{
+                                            pathname:`/b/edit/${book?.id}`,
+                                            search:`?id=${book?.id}`,
+                                            state:  { activateLink: true, bookId:book?.id}
+                                        }}
+                                        style={{ textDecoration: 'none' }}
+                                    >
+                                        Edit
+                                    </Link>
+                                </Button>
+
                             </Card.Text>
                         </Card.Body>
                     </Card>

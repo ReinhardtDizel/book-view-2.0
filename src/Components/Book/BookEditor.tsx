@@ -1,9 +1,11 @@
 import * as React from "react";
 import {Button, Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
 import Form from 'react-bootstrap/Form'
-import {Author} from "../Models/Author";
-import {Book} from "../Models/Book";
-import EditorAuthor, {AuthorInterface} from "./Editor-author";
+import {Author} from "../../Models/Author";
+import {Book} from "../../Models/Book";
+import {AuthorInterface} from "../Author/AuthorEditor";
+import AuthorView from "../Author/AuthorView";
+import ISaveButton from "../SaveButton";
 
 
 const Link = require("react-router-dom").Link;
@@ -13,6 +15,7 @@ interface Props {
     save?: () => any;
     book?:Book;
     handler?: (e:any) => any;
+    state?: any;
 }
 interface State {
     book?: Book;
@@ -25,7 +28,7 @@ interface State {
 }
 
 
-export default class EditorBook extends React.Component<Props, State>{
+export default class BookEditor extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -41,7 +44,7 @@ export default class EditorBook extends React.Component<Props, State>{
 
     authorChange = (author: Author) => {
         const {authors} = this.state;
-        console.log(author.name?.firstName);
+
     }
 
     handleInputChange = (event: any):void => {
@@ -85,16 +88,16 @@ export default class EditorBook extends React.Component<Props, State>{
     }
 
     authorsCreate = (authors?:Author[]) => {
+        const {state} = this.props;
         return (
             authors!== null && authors !== undefined)
             ? authors.map(
                 (author) => {
                     return(
-                        <EditorAuthor
-                            authorInterface={AuthorInterface.FULL}
-                            author={author}
+                        <AuthorView authorInterface={AuthorInterface.FULL}
+                                    author={author}
+                                    state={state}
                         />
-
                     )
                 }
             ):null
@@ -135,7 +138,8 @@ export default class EditorBook extends React.Component<Props, State>{
             authors,
             image,
         } = this.state;
-
+        const {state} = this.props;
+        console.log(state);
         return(
             <Row className={'EditorContainer'}>
                 <Col  className={'Editor-bookImage'} xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
@@ -223,7 +227,21 @@ export default class EditorBook extends React.Component<Props, State>{
 
                         <Card.Body>
                             <Card.Text key={"Links"}>
-                                <Link to={`/`} style={{ textDecoration: 'none' }}>Back</Link>
+                                <Button variant="link"
+                                        className='BackButton'
+                                        size="sm"
+                                >
+                                    <Link key={book?.id}
+                                          to={{pathname: `/b/${book?.id}`, search: `?id=${book?.id}`}}
+                                          style={{ textDecoration: 'none' }}
+                                          className="linkBook"
+                                    >Back
+                                    </Link>
+                                </Button>
+                                <ISaveButton  variant="link" isLoading={false}
+                                >
+                                    save
+                                </ISaveButton>
                             </Card.Text>
                         </Card.Body>
 

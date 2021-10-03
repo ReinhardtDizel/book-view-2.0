@@ -4,8 +4,8 @@ import {Button} from "react-bootstrap";
 interface State {
 }
 interface Props {
+    variant?: any;
     saveOnClick?: (e:any) => void;
-    saved: boolean;
     isLoading: boolean;
 }
 
@@ -27,14 +27,14 @@ class ISaveButton extends React.Component<Props, State> {
     }
 
     render() {
-        const {isLoading} = this.props;
+        const {isLoading,variant} = this.props;
         return (
             <Button
                 disabled={isLoading as boolean ? true : false}
                 onClick={this.saveButtonHandler}
                 className='saveBtn'
                 size="sm"
-                variant="dark"
+                variant={variant}
             >
                 {isLoading ? 'Loading…' : 'Save'}
             </Button>

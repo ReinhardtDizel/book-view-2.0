@@ -4,9 +4,9 @@ import {Route, RouteComponentProps, Switch} from "react-router-dom";
 import {Book} from "./Models/Book";
 
 import {Col, Container, Row} from "react-bootstrap";
-import RouteBook from "./Routes/RouteBook"
+import RouteBook from "./Routes/BookRoute"
 import {getBookById, getBooks} from "./Api/Api";
-import BooksTable from "./Components/BooksTable";
+import BooksTable from "./Components/Book/BooksTable";
 
 
 

@@ -1,8 +1,9 @@
 import * as React from "react";
-import {Author} from "../Models/Author";
-import {Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
+import {Author} from "../../Models/Author";
+import {Card, Col, FormControl, InputGroup, Row, Button} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import ISaveButton from "./SaveButton";
+import ISaveButton from "../SaveButton";
+import {Link} from "react-router-dom";
 
 export const enum AuthorInterface {
     FULL,
@@ -10,7 +11,8 @@ export const enum AuthorInterface {
 }
 
 interface Props {
-    author?: Author;
+    history?: any;
+    state?: any
     authorInterface: AuthorInterface;
 }
 
@@ -18,6 +20,7 @@ interface State {
     validate: boolean;
     hasError: any;
     author?: Author;
+    bookId: string | null;
     id?: string;
     bio?: string;
     firstName?: string;
@@ -27,14 +30,15 @@ interface State {
     fullName?: string;
 }
 
-export default class EditorAuthor extends React.Component<Props, State> {
+export default class AuthorEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
+            bookId: null,
             validate: false,
             hasError: null,
-            author: this.props.author,
-            id: "",
+            author: undefined,
+            id: undefined,
             bio: "",
             firstName: "",
             lastName: "",
@@ -45,36 +49,59 @@ export default class EditorAuthor extends React.Component<Props, State> {
         }
         this.handleInputNameChange = this.handleInputNameChange.bind(this);
         this.nameCreate = this.nameCreate.bind(this);
+        this.saveAuthor = this.saveAuthor.bind(this);
     }
 
-   /*componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
-        const{firstName,lastName,middleName,shortName,fullName,bio} = this.state;
-        if(prevState !== this.state) {
-            if (firstName !== null && lastName !== null && firstName !== undefined && lastName !== undefined) {
-                if (firstName.length > 2 && lastName.length > 2) {
-                    this.setState({
-                        validate: true,
-                    });
-                }
-            }
+    saveAuthor = (e:any):any => {
+        e.preventDefault();
+        const {history} = this.props;
+        const {bookId, fullName, firstName, middleName, shortName, lastName, id, bio} = this.state;
+        let author: Author = {
+            id: id,
+            name: {
+                fullName: fullName,
+                firstName: firstName,
+                middleName: middleName,
+                shortName: shortName,
+                lastName: lastName,
+            },
+            bio: bio,
         }
+        history.push({
+            pathname: `/b/edit/${bookId}`,
+            search: `?id=${bookId}`,
+            state: {
+                activateLink: true,
+                author: author
+            }
+        })
     }
-
-    */
 
 
     componentWillMount() {
-        const {author} = this.state;
-        if(author) {
+        const {state} = this.props;
+        if(state.author) {
             try {
                 this.setState({
-                    id: author.id,
-                    bio: author.bio,
-                    firstName: author.name?.firstName,
-                    lastName: author.name?.lastName,
-                    middleName: author.name?.middleName,
-                    shortName: author.name?.shortName,
-                    fullName: author.name?.fullName,
+                    author: state.author,
+                    id: state.author.id,
+                    bio: state.author.bio,
+                    firstName: state.author.name?.firstName,
+                    lastName: state.author.name?.lastName,
+                    middleName: state.author.name?.middleName,
+                    shortName: state.author.name?.shortName,
+                    fullName: state.author.name?.fullName,
+                } as any);
+            } catch (error) {
+                this.setState({
+                    hasError: error,
+                });
+            }
+        }
+        if(state.bookId) {
+            try {
+                this.setState({
+                    bookId: state.bookId,
                 } as any);
             } catch (error) {
                 this.setState({
@@ -100,6 +127,19 @@ export default class EditorAuthor extends React.Component<Props, State> {
                    hasError: error,
                 });
             }
+            const {firstName, lastName} = this.state;
+            if(firstName !== undefined && lastName !== undefined) {
+                if (firstName?.length >= 3 && lastName?.length >= 3) {
+                    const fullName = firstName + " " + lastName;
+                    this.setState({
+                        fullName: fullName,
+                    });
+                }
+            }
+        }
+    }
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
+        if(prevState != this.state) {
         }
     }
 
@@ -247,6 +287,7 @@ export default class EditorAuthor extends React.Component<Props, State> {
     }
 
     render() {
+        const {bookId} = this.state;
         return (
             <Col xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
                 <Card className={'EditorCard-1'}  style={{backgroundColor:"lightgray"}}>
@@ -257,7 +298,37 @@ export default class EditorAuthor extends React.Component<Props, State> {
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                             {this.showBio()}
                         </Form.Group>
-                    </Card.Body><ISaveButton saved={false} isLoading={false}>save</ISaveButton>
+                        <Button variant="link"
+                                className='BackButton'
+                                size="sm"
+                        >
+                            <Link
+
+                                to={{
+                                    pathname:`/b/edit/${bookId}`,
+                                    search:`?id=${bookId}`,
+                                    state:  { activateLink: true }
+                                }}
+                                style={{ textDecoration: 'none' }}
+                            >
+                                Back
+                            </Link>
+                        </Button>
+                        <Button variant="link"
+                                className='SaveButton'
+                                size="sm"
+                        >
+                            <Link
+                                onClick={this.saveAuthor}
+                                to = {this.props}
+                                style={{ textDecoration: 'none' }}
+                            >
+                                Save
+                            </Link>
+                        </Button>
+
+                    </Card.Body>
+
                 </Card>
 
             </Col>

@@ -1,8 +1,8 @@
 import * as React from "react";
 import {Row} from "react-bootstrap";
 import BookRow from "./BookRow";
-import {Author} from "../Models/Author";
-import {Book} from "../Models/Book";
+import {Author} from "../../Models/Author";
+import {Book} from "../../Models/Book";
 
 
 interface Props {

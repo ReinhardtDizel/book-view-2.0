@@ -2,9 +2,9 @@ import * as React from "react";
 import Card from "react-bootstrap/Card";
 import {Col, ListGroupItem} from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup'
-import {Author} from "../Models/Author";
-import {representTime} from "../Functions/representTime";
-import {Book} from "../Models/Book";
+import {Author} from "../../Models/Author";
+import {representTime} from "../../Functions/representTime";
+import {Book} from "../../Models/Book";
 
 const Link = require("react-router-dom").Link;
 
