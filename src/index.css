@@ -19,25 +19,13 @@
 .BooksCol3{
     background-color: indianred;
 }
-@media (min-width: 768px) {
-    .container {
-        max-width: 100%;
-    }
-}
-@media (min-width: 576px) {
-    .container {
-        max-width: 100%;
-    }
-}
-.container{
-    padding-right: 0rem;
-    padding-left: 0rem;
-    margin-right: 0rem;
-    margin-left: 0rem;
+.BooksCol2{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 .bookCard{
     padding-right: 0rem;
-    padding-left: 1rem;
+    padding-left: 0rem;
     margin-right: 0rem;
     margin-left: 0rem;
     color: black;
@@ -45,17 +33,35 @@
 }
 .linkBook{
     padding-right: 0rem;
-    padding-left: 1rem;
+    padding-left: 0rem;
     margin-right: 0rem;
     margin-left: 0rem;
 }
-.Editor-bookImage,.Presentation-bookImage{
+.BookEditorImage,.bookViewImage{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     width: 15rem;
 }
-.EditorCard-1,.PresentationCard-1{
+.BookEditorCard-1,.bookViewCard-1{
     width: auto;
 }
-.mb-4 {
+.mb-4, .g-5{
     width: auto;
 }
+.g-5{
+    width: auto;
+    padding: 0rem;
+    margin: 0rem;
+}
+.BookTable_BookAdd{
+    width: auto;
+}
+.saveLink, .backLink, .editLink, .deleteLink, .ImageEditorLink, .addLink {
+    color: #FFF;
+    text-decoration: inherit;
+}
+.buttonCard{
+    padding-top: 1rem;
+}
+
 

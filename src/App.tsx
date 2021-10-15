@@ -4,9 +4,9 @@ import {Route, RouteComponentProps, Switch} from "react-router-dom";
 import {Book} from "./Models/Book";
 
 import {Col, Container, Row} from "react-bootstrap";
-import RouteBook from "./Routes/RouteBook"
-import {getBookById, getBooks} from "./Api/Api";
-import BooksTable from "./Components/BooksTable";
+import RouteBook from "./Routes/BookRoute"
+import {deleteBook, getBookById, getBooks, postBook, putBook} from "./Api/Api";
+import BooksTable from "./Components/Book/BooksTable";
 
 
 
@@ -56,6 +56,61 @@ export default class App extends React.Component<Props & RouteComponentProps , S
                     alert("res == null && res == undefined")
             });
         }
+    }
+
+    PutBook = (e:any) => {
+        const {history} = this.props;
+        const book = e as any;
+        if (history !== undefined && history !== null) {
+            if (book !== undefined) {
+                if (book.id !== undefined && book.id !== null && book.id !== "new") {
+                    putBook(
+                        book.id,
+                        book
+                    ).then(res => {
+                        if(res !== undefined && res !== null && res !== "ERROR") {
+                            if (res.status == 200) {
+                                history.push({
+                                    pathname: `/b/edit/save/${book?.id}`,
+                                    state: {showPopUp: true}
+                                })
+                            }
+                        }
+                    });
+                }
+                else
+                    postBook(
+                        book
+                    ).then(res => {
+                        if(res !== undefined && res !== null && res !== "ERROR") {
+                            if (res.status == 200) {
+                                history.push({
+                                    pathname: `/b/edit/save/:new`,
+                                    state: {showPopUp: true}
+                                })
+                            }
+                        }
+                    });
+            }
+        }
+    }
+
+    deleteBook = (e:any) => {
+        const id = e as any;
+        const {history} = this.props;
+        console.log(id);
+        deleteBook(
+            id
+        ).then(res => {
+            if(res !== undefined && res !== null && res !== "ERROR") {
+                if (res.status == 200) {
+                    history.push({
+                        pathname: `/`,
+                        state: {showPopUp: true}
+                    })
+                }
+            }
+        });
     }
 
     updateBooks = () => {
@@ -119,11 +174,13 @@ export default class App extends React.Component<Props & RouteComponentProps , S
                                         </BooksTable>
                                     </Col>
                                 )}/>
-                            <Route path="/b/:id"
+                            <Route path="/b/"
                                              render={ () => (
                                                  <RouteBook
                                                      book={book}
                                                      handler={this.getData}
+                                                     deleteBook={this.deleteBook}
+                                                     put={this.PutBook}
                                                      history={this.props.history}
                                                      location={this.props.location}
                                                      match={this.props.match}>

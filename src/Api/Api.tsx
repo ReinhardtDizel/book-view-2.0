@@ -20,10 +20,34 @@ export const  getBookById = async (id:string) => {
     return data;
 }
 
-export const putBook = async (id:string, postData:any) => {
-    const data = await axios.put(booksDataURL + id, postData);
-    const wait = await simulateNetworkRequest().then(() => {});
-    return data;
+export const putBook = async (id:string, putData:any) => {
+    if(id !== undefined && id !== null && putData !== undefined && putData !== null) {
+        const data = await axios.put(booksDataURL + id, putData);
+        const wait = await simulateNetworkRequest().then(() => {
+        });
+        return data;
+    }
+    return "ERROR";
+}
+
+export const postBook = async (postData:any) => {
+    if(postData !== undefined && postData !== null) {
+        const data = await axios.post(booksDataURL, postData);
+        const wait = await simulateNetworkRequest().then(() => {
+        });
+        return data;
+    }
+    return "ERROR";
+}
+
+export const deleteBook = async (id:string) => {
+    if(id !== undefined && id !== null && id !== "new") {
+        const data = await axios.delete(booksDataURL + id);
+        const wait = await simulateNetworkRequest().then(() => {
+        });
+        return data;
+    }
+    return "ERROR";
 }
 
 export const simulateNetworkRequest = ():any => {
