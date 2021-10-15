@@ -4,6 +4,8 @@ import {Col, ListGroupItem} from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup'
 import {Author} from "../../Models/Author";
 import {representTime} from "../../Functions/representTime";
+import {Image} from "../../Models/Image";
+import {arrayToBase64, getBookCover, JPEG_IMAGE_DATA} from "../Image/ImageTools";
 import {Book} from "../../Models/Book";
 
 const Link = require("react-router-dom").Link;
@@ -26,8 +28,9 @@ export default class BookRow extends React.Component<Props, State > {
         const {
             book,
         } = this.props;
+        const base64Image = getBookCover(book);
         return(
-            <Col xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto' className="bookCard"
+            <Col xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto' className="bookCard"
                  onClick={this.bookOnClick}
             >
                 <Card className = "box">
@@ -36,7 +39,7 @@ export default class BookRow extends React.Component<Props, State > {
                           style={{ textDecoration: 'none' }}
                           className="linkBook"
                     >
-                    <Card.Img variant="top" src={book.image} />
+                    <Card.Img variant="top" src={`${JPEG_IMAGE_DATA},${base64Image}`} />
                     <Card.Body>
                         <Card.Title>{book.title}</Card.Title>
 

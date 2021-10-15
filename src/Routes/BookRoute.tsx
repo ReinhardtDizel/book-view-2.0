@@ -1,15 +1,18 @@
 import * as React from "react";
-import {Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
+import {Col, Row} from "react-bootstrap";
 import BookView from "../Components/Book/BookView";
 import {Route, RouteComponentProps, Switch} from "react-router-dom";
 import BookEditor from "../Components/Book/BookEditor";
 import {Book} from "../Models/Book";
 import AuthorEditor, {AuthorInterface} from "../Components/Author/AuthorEditor";
+import AuthorView from "../Components/Author/AuthorView";
+import PopUp from "../Components/PopUp";
+import ImageEditor from "../Components/Image/ImageEditor";
 
-const Link = require("react-router-dom").Link;
 
 interface Props {
-    save?: () => any;
+    put?: (e:any) => void;
+    deleteBook?: (e:any) => void;
     handler?: (e:any) => void;
     book?: Book;
 }
@@ -31,14 +34,27 @@ export default class RouteBook extends React.Component<Props & RouteComponentPro
         }
     }
 
+    author = () => {
+        const {
+            location,
+        } = this.props;
+        if(location.state) {
+            const {author} = location.state as any;
+            return author;
+        }
+    }
+
     render() {
         const {
             book,
             handler,
             history,
+            location,
+            deleteBook,
+            put,
         } = this.props;
-        return(
 
+        return(
             <Switch>
                 <Route exact={true} path="/b/:id">
                     <BookView
@@ -48,15 +64,27 @@ export default class RouteBook extends React.Component<Props & RouteComponentPro
                     >
                     </BookView>
                 </Route>
-
+                <Route path="/b/author/:id">
+                    <AuthorView
+                        author={this.author()}
+                        state={location.state}
+                        authorInterface={AuthorInterface.FULL}
+                        arrayId={0}
+                    >
+                        Tra
+                    </AuthorView>
+                </Route>
                 <Row>
                     <Route path="/b/edit/">
                         <Col>
                             <Route path="/b/edit/:id" >
                             <BookEditor
                                 book={book}
+                                deleteBook={deleteBook}
+                                put={put}
                                 handler={handler}
                                 state={this.props.location.state}
+                                history={history}
                             >
                             </BookEditor>
                             </Route>
@@ -64,15 +92,26 @@ export default class RouteBook extends React.Component<Props & RouteComponentPro
                         <Col>
                             <Route path="/b/edit/author/:fullName">
                                 <AuthorEditor authorInterface={AuthorInterface.FULL}
-                                              state={this.props.location.state}
+                                              state={location.state}
                                               history={history}
                                 />
                             </Route>
+                            <Route path="/b/edit/image/:id">
+                                <ImageEditor state={location.state}
+                                             history={history}
+                                />
+                            </Route>
                         </Col>
-                            <Route path="/b/edit/save/:id"></Route>
+                            <Route path="/b/edit/save/:id">
+                                <PopUp
+                                    id={book?.id}
+                                    history={history}
+                                    showPopUp={location.state as any}
+                                >
+                                </PopUp>
+                            </Route>
                     </Route>
                 </Row>
-
             </Switch>
         )
     }

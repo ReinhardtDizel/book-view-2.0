@@ -1,9 +1,10 @@
 import * as React from "react";
 import {Author} from "../../Models/Author";
-import {Card, Col, FormControl, InputGroup, Row, Button} from "react-bootstrap";
+import {Button, Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import ISaveButton from "../SaveButton";
+
 import {Link} from "react-router-dom";
+
 
 export const enum AuthorInterface {
     FULL,
@@ -21,6 +22,7 @@ interface State {
     hasError: any;
     author?: Author;
     bookId: string | null;
+    arrayId: number | null;
     id?: string;
     bio?: string;
     firstName?: string;
@@ -34,6 +36,7 @@ export default class AuthorEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
+            arrayId: null,
             bookId: null,
             validate: false,
             hasError: null,
@@ -50,12 +53,23 @@ export default class AuthorEditor extends React.Component<Props, State> {
         this.handleInputNameChange = this.handleInputNameChange.bind(this);
         this.nameCreate = this.nameCreate.bind(this);
         this.saveAuthor = this.saveAuthor.bind(this);
+        this.deleteAuthor = this.deleteAuthor.bind(this);
     }
 
     saveAuthor = (e:any):any => {
         e.preventDefault();
-        const {history} = this.props;
-        const {bookId, fullName, firstName, middleName, shortName, lastName, id, bio} = this.state;
+        const {history, state} = this.props;
+        const {firstName, lastName} = this.state;
+        let fullName;
+        if(firstName !== undefined && lastName !== undefined) {
+            if (firstName?.length >= 3 && lastName?.length >= 3) {
+                fullName = firstName + " " + lastName;
+                this.setState({
+                    fullName: fullName,
+                });
+            }
+        }
+        const {bookId, middleName, shortName, id, bio, arrayId} = this.state;
         let author: Author = {
             id: id,
             name: {
@@ -69,14 +83,28 @@ export default class AuthorEditor extends React.Component<Props, State> {
         }
         history.push({
             pathname: `/b/edit/${bookId}`,
-            search: `?id=${bookId}`,
+            hash: "#authorSave",
             state: {
                 activateLink: true,
-                author: author
+                author: author,
+                arrayId: arrayId
             }
         })
     }
 
+    deleteAuthor = (e:any) => {
+        e.preventDefault();
+        const {history, state} = this.props;
+        const {bookId, arrayId} = this.state;
+        history.push({
+            pathname: `/b/edit/${bookId}`,
+            hash: "#authorDelete",
+            state: {
+                activateLink: true,
+                arrayId: arrayId
+            }
+        })
+    }
 
     componentWillMount() {
         const {state} = this.props;
@@ -109,6 +137,17 @@ export default class AuthorEditor extends React.Component<Props, State> {
                 });
             }
         }
+        if(state.arrayId !== undefined && state.arrayId !== null) {
+            try {
+                this.setState({
+                    arrayId: state.arrayId,
+                } as any);
+            } catch (error) {
+                this.setState({
+                    hasError: error,
+                });
+            }
+        }
     }
 
     static getDerivedStateFromError(error: any) {
@@ -127,15 +166,6 @@ export default class AuthorEditor extends React.Component<Props, State> {
                    hasError: error,
                 });
             }
-            const {firstName, lastName} = this.state;
-            if(firstName !== undefined && lastName !== undefined) {
-                if (firstName?.length >= 3 && lastName?.length >= 3) {
-                    const fullName = firstName + " " + lastName;
-                    this.setState({
-                        fullName: fullName,
-                    });
-                }
-            }
         }
     }
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -147,7 +177,7 @@ export default class AuthorEditor extends React.Component<Props, State> {
         const {firstName, middleName, shortName, lastName} = this.state;
         const fontSize = 11;
             return (
-                    <Card style={{backgroundColor:"lightsteelblue"}} >
+                    <Card style={{backgroundColor:"lightsteelblue"}}>
                         <Card.Body>
                             <Form.Label style={{fontSize:fontSize }}>First Name:</Form.Label>
                             <InputGroup hasValidation>
@@ -271,7 +301,7 @@ export default class AuthorEditor extends React.Component<Props, State> {
                 <InputGroup hasValidation>
                     <Form.Control
                         type="text" required isInvalid={this.bioValidate(bio)}
-                        as="textarea" rows={5}
+                        as="textarea" rows={6}
                         defaultValue={bio}
                         onChange={this.handleInputNameChange}
                         name="bio"
@@ -298,39 +328,48 @@ export default class AuthorEditor extends React.Component<Props, State> {
                         <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                             {this.showBio()}
                         </Form.Group>
-                        <Button variant="link"
+                        <Button variant="secondary"
                                 className='BackButton'
                                 size="sm"
                         >
                             <Link
-
                                 to={{
                                     pathname:`/b/edit/${bookId}`,
                                     search:`?id=${bookId}`,
                                     state:  { activateLink: true }
                                 }}
-                                style={{ textDecoration: 'none' }}
+                               className = "backLink"
                             >
                                 Back
                             </Link>
-                        </Button>
-                        <Button variant="link"
+                        </Button>&nbsp;&nbsp;
+                        <Button variant="secondary"
                                 className='SaveButton'
                                 size="sm"
                         >
                             <Link
                                 onClick={this.saveAuthor}
                                 to = {this.props}
-                                style={{ textDecoration: 'none' }}
+                                className = "saveLink"
                             >
                                 Save
                             </Link>
                         </Button>
-
+                        <Button style={{float: 'right'}}
+                                variant="secondary"
+                                className='DeleteButton'
+                                size="sm"
+                        >
+                            <Link
+                                onClick={this.deleteAuthor}
+                                to = {this.props}
+                                className = "deleteLink"
+                            >
+                                Delete
+                            </Link>
+                        </Button>
                     </Card.Body>
-
                 </Card>
-
             </Col>
         );
     }

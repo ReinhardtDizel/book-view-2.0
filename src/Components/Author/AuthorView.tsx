@@ -4,11 +4,13 @@ import {Author} from "../../Models/Author";
 import {AuthorInterface} from "./AuthorEditor";
 
 const Link = require("react-router-dom").Link;
+const linkColor = '#FFF';
 
 interface Props {
     author?: Author;
     authorInterface: AuthorInterface;
     state?: any;
+    arrayId: number;
 }
 interface State {
     activateLink: boolean;
@@ -77,7 +79,7 @@ export default class AuthorView extends React.Component<Props, State> {
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
         if(prevProps != this.props) {
-            const {state} = this.props;
+            const {state, author} = this.props;
             if (state !== undefined) {
                 if (state.activateLink == false) {
                     this.setState({
@@ -89,53 +91,64 @@ export default class AuthorView extends React.Component<Props, State> {
                     });
                 }
             }
+            if(author !== undefined && author !== this.state.author) {
+                try {
+                    this.setState({
+                        author: author,
+                        bio: author.bio,
+                        firstName: author.name?.firstName,
+                        lastName: author.name?.lastName,
+                        middleName: author.name?.middleName,
+                        shortName: author.name?.shortName,
+                        fullName: author.name?.fullName,
+                    } as any);
+                } catch (error) {
+                    this.setState({
+                        hasError: error,
+                    });
+                }
+            }
         }
     }
 
-    activateLink = () => {
-        const fontSize = 13;
-        const {author, activateLink, bookId} = this.state;
-        const {fullName} = this.state;
-        if(author !== undefined && author !== null && activateLink) {
+    interface = () => {
+        const {authorInterface} = this.props;
+        const {bookId} = this.state;
+        if(authorInterface == AuthorInterface.FULL)  {
             return (
-                <Button variant="link"
-                        className='EditButton'
+                <Button variant="secondary"
+                        className='BookEditor_BackButton'
                         size="sm"
                 >
-                    <Link key={author.id}
+                    <Link key={"backLink"+bookId}
                           to={{
-                              pathname: `/b/edit/author/${(fullName)?fullName:"new"}`,
-                              state: {author: author, activateLink: false, bookId: bookId}
+                              pathname: `/b/${bookId}`,
+                              search: `?id=${bookId}`
                           }}
-                          style={{textDecoration: 'none'}}
-                          className="linkAuthor"
-                    >
-                        <Card.Text style={{fontSize: fontSize}}>
-                            Edit
-                        </Card.Text>
-                    </Link>
-                </Button>
+                          className="backLink"
 
-            )
-        }
-        if(!activateLink) {
-            return (
-                <Button
-                    variant="link"
-                    className='EditButton'
-                    size="sm"
-                    disabled
-                >
-                    <Card.Text style={{fontSize: fontSize}}>
-                        Edit
-                    </Card.Text>
+                    >
+                        Back
+                    </Link>
                 </Button>
             )
         }
     }
 
     render() {
-        const {author,fullName} = this.state;
+        const {
+            author,
+            fullName,
+            firstName,
+            middleName,
+            lastName,
+            shortName,
+            bio,
+            activateLink,
+            bookId,
+        } = this.state;
+        const {arrayId, authorInterface} = this.props;
+        const fontSize = 13;
         if(author !== undefined && author !== null) {
             return (
                 <Col className={'PresentationContainer'} style={{backgroundColor:"lightsteelblue"}}>
@@ -150,10 +163,32 @@ export default class AuthorView extends React.Component<Props, State> {
                                     <Card.Text >
                                         {fullName}
                                     </Card.Text>
-
-
+                                    {(authorInterface == AuthorInterface.FULL)?bio:''}
                                     <Card.Text >
-                                        {this.activateLink()}
+                                        {this.interface()}
+                                        <Button style = {{marginLeft: 10}}
+                                                variant="secondary"
+                                                className='EditButton'
+                                                size="sm"
+                                                disabled={activateLink?false:true}
+                                        >
+                                            <Link key={author.id}
+                                                  to={{
+                                                      pathname: `/b/edit/author/${(fullName)?fullName:"new"}`,
+                                                      state: {
+                                                          author: author,
+                                                          activateLink: false,
+                                                          bookId: bookId,
+                                                          arrayId: arrayId,
+                                                      }
+                                                  }}
+                                                  className="editLink"
+                                            >
+                                                <Card.Text style={{fontSize: fontSize}}>
+                                                    Edit
+                                                </Card.Text>
+                                            </Link>
+                                        </Button>
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
