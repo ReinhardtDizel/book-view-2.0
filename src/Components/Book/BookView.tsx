@@ -1,10 +1,9 @@
 import * as React from "react";
-import {Card, Col, Row, Button, Container} from "react-bootstrap";
+import {Button, Card, Col, Container, Row} from "react-bootstrap";
 import {Author} from "../../Models/Author";
 import {representTime} from "../../Functions/representTime";
 import {Book} from "../../Models/Book";
-import {Image} from "../../Models/Image";
-import {arrayToBase64, getBookCover, JPEG_IMAGE_DATA} from "../Image/ImageTools";
+import {getBookCover, JPEG_IMAGE_DATA} from "../Image/ImageTools";
 
 const Link = require("react-router-dom").Link;
 
@@ -14,30 +13,118 @@ interface Props {
     book?: Book;
 }
 interface State {
-    book?: Book;
+    id?: string;
+    authors?: Author[];
+    title?: string;
+    publishing?: Date;
+    description?: string;
     image?: string;
 }
-
 
 export default class BookView extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
-            book: undefined,
+            id: '',
+            authors: [],
+            title: '',
+            publishing: undefined,
+            description: '',
+            image: '',
         };
+    }
+    render() {
+        const {
+            id,
+            title,
+            publishing,
+            description,
+            image,
+        } = this.state;
+        return(
+            <Container fluid className={'bookViewContainer'}>
+                <Row>
+                    <Col className={'bookViewImage'} xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'>
+                        <Card.Img key={"ImageURL"} variant="top" src={`${JPEG_IMAGE_DATA},${image?image:''}`}/>
+                    </Col>
+                    <Col>
+                        <Card className={'bookViewCard-1'}>
+                            <Card.Body>
+                                <Card.Text key={"Title"}>
+                                    {
+                                        title ? title : "noTitle"
+                                    }
+                                </Card.Text>
+                                <Card.Text key={"Author"}>
+                                    {this.authorViewLink()}
+                                </Card.Text>
+                                <Card.Text key={"PublishingDate"}>
+                                    {
+                                        representTime(publishing)
+                                    }
+                                </Card.Text>
+                                <Card.Text key={"Description"}>
+                                    {
+                                        description ? description : "noDescription"
+                                    }
+                                </Card.Text>
+                                <Card.Text key={"links"}>
+                                    <Button
+                                        className='BackButton'
+                                        variant="secondary"
+                                        size="sm"
+                                    >
+                                        <Link
+                                            className = "backLink"
+                                            to={`/`}
+                                        >
+                                            Back
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        className='EditButton'
+                                        variant="secondary"
+                                        size="sm"
+                                    >
+                                        <Link
+                                            className = "editLink"
+                                            to={{
+                                                pathname:`/b/edit/${id}`,
+                                                search:`?id=${id}`,
+                                                state:  { activateLink: true, bookId:id}
+                                            }}
+                                        >
+                                            Edit
+                                        </Link>
+                                    </Button>
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        )
+    }
+
+    componentDidMount() {
+        let search = this.props.history.location.search;
+        this.getData(search.replaceAll('?id=', ''));
     }
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
-     /*   if (this.props.book == undefined) {
-            let search = this.props.history.location.search;
-            this.getData(search.replaceAll('?id=', ''));
+        if(prevProps !== this.props) {
+            const {book} = this.props
+            if(book !== undefined && book !== null) {
+                this.setState({
+                    id: book.id,
+                    authors: book.authors,
+                    title: book.title,
+                    publishing: book.publishing,
+                    description: book.description,
+                    image: getBookCover(book),
+                });
+            }
         }
-      */
-    }
-
-    componentWillMount() {
-        let search = this.props.history.location.search;
-        this.getData(search.replaceAll('?id=', ''));
     }
 
     getData = (query:any) =>  {
@@ -48,100 +135,35 @@ export default class BookView extends React.Component<Props, State>{
         }
     }
 
-    authorsShow = () => {
-        const {book} = this.props
-
+    authorViewLink = () => {
+        const {authors, id} = this.state;
         return (
-            book?.authors!== null && book?.authors !== undefined)
-            ? book?.authors.map(
+            authors!== null && authors !== undefined)
+            ? authors.map(
                 (author) => {
-                    return(
-                        <td>
-                            <Link
-                                to={{
-                                    pathname:`/b/author/${author.id}`,
-                                    state: {
-                                        author: author,
-                                        bookId: book?.id,
+                    const {name} = author;
+                    if(author !== undefined) {
+                        const fullName = name?.fullName ? name?.fullName : "noFullName";
+                        return (
+                            <td>
+                                <Link
+                                    className="authorLink"
+                                    to={{
+                                        pathname: `/b/author/${author.id}`,
+                                        state: {
+                                            author: author,
+                                            bookId: id ? id : "undefined_authorView",
+                                        }
+                                    }}
+                                >
+                                    {
+                                        fullName
                                     }
-                                }}
-                                style = {{textDecoration: 'none'}}
-                                className = "authorLink"
-                            >
-                                {author.name?.fullName}
-                            </Link> &nbsp;&nbsp;
-                        </td>
-                    )
+                                </Link> &nbsp;&nbsp;
+                            </td>
+                        )
+                    }
                 }
             ):null
-    }
-
-    render() {
-        const {
-          book,
-        } = this.props;
-
-        const base64Image = getBookCover(book);
-        return(
-            <Container fluid className={'bookViewContainer'}>
-                <Row>
-                    <Col className={'bookViewImage'} xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'>
-                        <Card.Img variant="top" src={`${JPEG_IMAGE_DATA},${base64Image?base64Image:''}`}/>
-                    </Col>
-                    <Col>
-                        <Card className={'bookViewCard-1'}>
-                            <Card.Body>
-                                <Card.Text key={"Title"}>
-                                    {book?.title}
-                                </Card.Text>
-                                <Card.Text key={"Author"}>
-                                    {this.authorsShow()}
-                                </Card.Text>
-                                <Card.Text key={"PublishingDate"}>
-                                    {representTime(book?.publishing)}
-                                </Card.Text>
-                                <Card.Text key={"Description"}>
-                                    {book?.description}
-                                </Card.Text>
-                                <Card.Text key={"ImageURL"}>
-                                </Card.Text>
-                                <Card.Text key={"links"}>
-                                    <Button variant="secondary"
-                                            className='BackButton'
-                                            size="sm"
-                                    >
-                                        <Link
-                                            to={`/`}
-                                            className = "backLink"
-                                        >
-                                            Back
-                                        </Link>
-                                    </Button>
-                                    <Button style = {{marginLeft: 10}}
-                                            variant="secondary"
-                                            className='EditButton'
-                                            size="sm"
-                                    >
-                                        <Link
-                                            to={{
-                                                pathname:`/b/edit/${book?.id}`,
-                                                search:`?id=${book?.id}`,
-                                                state:  { activateLink: true, bookId:book?.id}
-                                            }}
-                                            className = "editLink"
-                                        >
-                                            Edit
-                                        </Link>
-                                    </Button>
-
-                                </Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                </Row>
-            </Container>
-        )
     }
 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Route, RouteComponentProps, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 
 import {Book} from "./Models/Book";
 
@@ -8,20 +8,18 @@ import RouteBook from "./Routes/BookRoute"
 import {deleteBook, getBookById, getBooks, postBook, putBook} from "./Api/Api";
 import BooksTable from "./Components/Book/BooksTable";
 
-
-
-
 export interface Props {
+    history?:any;
+    location?:any;
 }
 export interface State {
     book?: Book;
     books?: Book[];
 }
 
-export default class App extends React.Component<Props & RouteComponentProps , State> {
-    constructor(props: Props & RouteComponentProps) {
+export default class App extends React.Component<Props , State> {
+    constructor(props: Props) {
         super(props);
-        //console.dir(props);
         this.state = {
             books: [] as Book[],
             book: undefined,
@@ -98,7 +96,6 @@ export default class App extends React.Component<Props & RouteComponentProps , S
     deleteBook = (e:any) => {
         const id = e as any;
         const {history} = this.props;
-        console.log(id);
         deleteBook(
             id
         ).then(res => {
@@ -141,17 +138,11 @@ export default class App extends React.Component<Props & RouteComponentProps , S
         this.setBook(id);
     }
 
-    componentDidUpdate() {
-
-    }
-
-    componentWillMount() {
+    componentDidMount() {
         this.updateBooks();
-
     }
 
     render() {
-
         const {
             book,
             books,
@@ -169,7 +160,6 @@ export default class App extends React.Component<Props & RouteComponentProps , S
                                     <Col className="BooksCol2" xs={6}>
                                         <BooksTable
                                             books={books}
-                                            handler={this.openBookDetailsView}
                                         >
                                         </BooksTable>
                                     </Col>
@@ -183,7 +173,7 @@ export default class App extends React.Component<Props & RouteComponentProps , S
                                                      put={this.PutBook}
                                                      history={this.props.history}
                                                      location={this.props.location}
-                                                     match={this.props.match}>
+                                                     >
                                                  </RouteBook>
                                              )}/>
                             <Col className="BooksCol3"xs={"auto"}>

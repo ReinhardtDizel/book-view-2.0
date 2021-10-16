@@ -56,9 +56,15 @@
 .BookTable_BookAdd{
     width: auto;
 }
+.EditButton{
+    margin-left: 1rem;
+}
 .saveLink, .backLink, .editLink, .deleteLink, .ImageEditorLink, .addLink {
     color: #FFF;
     text-decoration: inherit;
+}
+.authorLink, .linkBook {
+    text-decoration: none;
 }
 .buttonCard{
     padding-top: 1rem;

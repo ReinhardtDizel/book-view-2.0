@@ -139,10 +139,6 @@ export default class AuthorView extends React.Component<Props, State> {
         const {
             author,
             fullName,
-            firstName,
-            middleName,
-            lastName,
-            shortName,
             bio,
             activateLink,
             bookId,
@@ -157,7 +153,7 @@ export default class AuthorView extends React.Component<Props, State> {
                         </Card.Img>
                     </Col>
                     <Card.Body>
-                        <Col xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
+                        <Col>
                             <Card className={'PresentationCard-1'}>
                                 <Card.Body>
                                     <Card.Text >

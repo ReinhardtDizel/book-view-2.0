@@ -191,7 +191,7 @@ export default class BookEditor extends React.Component<Props, State>{
             ):null
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const {book, history} = this.props;
         if (book !== undefined && book !== null ) {
             this.setState({
@@ -205,35 +205,27 @@ export default class BookEditor extends React.Component<Props, State>{
         if(history !== undefined) {
             if(history.location !== undefined) {
                 if(history.location.hash !== undefined && history.location.hash !== null && history.location.hash !== "") {
-                   if(history.location.hash == "#addBook") {
-                       const book: Book = {
-                           id: undefined,
-                           title: '',
-                           description: '',
-                           publishing: undefined,
-                           images: undefined,
-                           authors: undefined,
-                       }
-                       this.setState({
-                           id: "new",
-                           book:book,
-                       });
+                    if(history.location.hash == "#addBook") {
+                        const book: Book = {
+                            id: undefined,
+                            title: '',
+                            description: '',
+                            publishing: undefined,
+                            images: undefined,
+                            authors: undefined,
+                        }
+                        this.setState({
+                            id: "new",
+                            book:book,
+                            title: '',
+                            authors: [] as Author[],
+                            description: '',
+                            publishing: undefined,
+                            pic: [] as Image[],
+                        });
                     }
                 }
             }
-        }
-    }
-
-    componentDidMount() {
-        const {book} = this.props;
-        if (book !== undefined && book !== null ) {
-            this.setState({
-                title: book.title,
-                authors: book.authors,
-                publishing: book.publishing,
-                description: book.description,
-                pic: book.images,
-            });
         }
     }
 

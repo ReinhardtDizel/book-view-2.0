@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Col, Row} from "react-bootstrap";
 import BookView from "../Components/Book/BookView";
-import {Route, RouteComponentProps, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import BookEditor from "../Components/Book/BookEditor";
 import {Book} from "../Models/Book";
 import AuthorEditor, {AuthorInterface} from "../Components/Author/AuthorEditor";
@@ -11,6 +11,8 @@ import ImageEditor from "../Components/Image/ImageEditor";
 
 
 interface Props {
+    history?:any;
+    location?:any;
     put?: (e:any) => void;
     deleteBook?: (e:any) => void;
     handler?: (e:any) => void;
@@ -19,19 +21,11 @@ interface Props {
 interface State {
 }
 
-
-export default class RouteBook extends React.Component<Props & RouteComponentProps, State>{
-    constructor(props: Props & RouteComponentProps) {
+export default class RouteBook extends React.Component<Props, State>{
+    constructor(props: Props) {
         super(props);
         this.state = {
         };
-    }
-
-    getState = ():any => {
-        const {state} = this.props.location;
-        if(state) {
-            return state as any;
-        }
     }
 
     author = () => {
@@ -53,7 +47,6 @@ export default class RouteBook extends React.Component<Props & RouteComponentPro
             deleteBook,
             put,
         } = this.props;
-
         return(
             <Switch>
                 <Route exact={true} path="/b/:id">
@@ -83,7 +76,7 @@ export default class RouteBook extends React.Component<Props & RouteComponentPro
                                 deleteBook={deleteBook}
                                 put={put}
                                 handler={handler}
-                                state={this.props.location.state}
+                                state={location.state}
                                 history={history}
                             >
                             </BookEditor>

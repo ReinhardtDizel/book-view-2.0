@@ -1,4 +1,5 @@
 import axios from "axios";
+import {Book} from "../Models/Book";
 
 export const booksDataURL = "http://localhost:8080/books/";
 

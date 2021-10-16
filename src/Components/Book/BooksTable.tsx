@@ -1,19 +1,15 @@
 import * as React from "react";
-import {Row, Container, Button, Col, Card} from "react-bootstrap";
+import {Button, Container, Row} from "react-bootstrap";
 import BookRow from "./BookRow";
-import {Author} from "../../Models/Author";
 import {Book} from "../../Models/Book";
 import {Link} from "react-router-dom";
 
 interface Props {
-    imgSize?: string;
-    handler?: (e:any) => void;
     books?: Book[] | null;
 }
 
 interface State {
     books?: Book[] | null;
-    selectedId?: string;
 }
 
 export default class BooksTable extends React.Component<Props, State> {
@@ -22,16 +18,6 @@ export default class BooksTable extends React.Component<Props, State> {
         this.state = {
             books: [] as Book[],
         }
-    }
-
-    handler = (event:any):void => {
-        const {handler} = this.props;
-        if (handler !== undefined && handler !== null) {
-            handler(event);
-        }
-        this.setState({
-            selectedId: event,
-        });
     }
 
     adminTools = () => {
@@ -70,7 +56,6 @@ export default class BooksTable extends React.Component<Props, State> {
                                     <BookRow
                                         key={ book.id }
                                         book={book}
-                                        handler={ this.handler }
                                     />
                                     )
                                 }
