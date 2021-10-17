@@ -1,5 +1,4 @@
 
-
 const enum rus {
     Январь = "Январь",
     Февраль = "Февраль",
@@ -13,8 +12,9 @@ const enum rus {
     Октябрь = "Октябрь",
     Ноябрь = "Ноябрь",
     Декабрь = "Декабрь"
-}
-let rusMonth = [
+};
+
+export const monthList = [
     "Нет 0 месяца!",
     rus.Январь,
     rus.Февраль,
@@ -28,5 +28,4 @@ let rusMonth = [
     rus.Октябрь,
     rus.Ноябрь,
     rus.Декабрь
-]
-export default rusMonth;
+];

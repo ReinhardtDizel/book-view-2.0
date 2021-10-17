@@ -1,34 +1,40 @@
-.headRow{
-    background-color: darkgrey;
+body{
+    background-color: #151414;
 }
-.headCol1{
-    background-color: darkcyan;
+.AppContainer {
+    background-color: #151414;
+    height: 100%;
+    width: border-box;
 }
-.headCol2{
-    background-color: cornflowerblue;
+.AppHeadRow{
+    background-color: #2d2d31;
 }
-.BooksRow{
-    background-color: whitesmoke;
+.AdminTools{
+    background-color: rgba(5, 115, 24, 0.5);
 }
-.BooksCol1{
-    background-color: darkkhaki;
+.AdminAddBook {
+    margin-bottom: 1%;
+    margin-top: 1%;
+    width: auto;
 }
-.BooksCol12{
-    scroll-behaviour: smooth;
+.AppBooksRow{
+    background-color: #2d2d31;
 }
-.BooksCol3{
-    background-color: indianred;
+.AppBooksTable{
+    background-color:  #2d2d31;
 }
-.BooksCol2{
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+.AuthorEditorCard-1 {
+    background-color: #b2afae;
 }
-.bookCard{
+
+.BookBox{
+    background-color: #ffffff;
+    width: 15rem;
+    height: 100%;
     padding-right: 0rem;
     padding-left: 0rem;
-    margin-right: 0rem;
-    margin-left: 0rem;
-    color: black;
+}
+.BookCover {
     width: 15rem;
 }
 .linkBook{
@@ -37,13 +43,20 @@
     margin-right: 0rem;
     margin-left: 0rem;
 }
-.BookEditorImage,.bookViewImage{
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+.BookEditorImage,.bookViewImage {
+    margin: 1%;
     width: 15rem;
 }
-.BookEditorCard-1,.bookViewCard-1{
+.bookViewCard{
+    margin: 1%;
+}
+.BookEditorCard-1{
+    margin: 1%;
     width: auto;
+}
+.bookTable{
+    padding-top: 1%;
+    margin-bottom: 1%;
 }
 .mb-4, .g-5{
     width: auto;
@@ -53,12 +66,15 @@
     padding: 0rem;
     margin: 0rem;
 }
-.BookTable_BookAdd{
-    width: auto;
+.EditButton{
+    margin-left: 1rem;
 }
 .saveLink, .backLink, .editLink, .deleteLink, .ImageEditorLink, .addLink {
     color: #FFF;
     text-decoration: inherit;
+}
+.authorLink, .linkBook {
+    text-decoration: none;
 }
 .buttonCard{
     padding-top: 1rem;
