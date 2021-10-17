@@ -27,17 +27,6 @@ export default class RouteBook extends React.Component<Props, State>{
         this.state = {
         };
     }
-
-    author = () => {
-        const {
-            location,
-        } = this.props;
-        if(location.state) {
-            const {author} = location.state as any;
-            return author;
-        }
-    }
-
     render() {
         const {
             book,
@@ -49,7 +38,10 @@ export default class RouteBook extends React.Component<Props, State>{
         } = this.props;
         return(
             <Switch>
-                <Route exact={true} path="/b/:id">
+                <Route
+                    exact={true}
+                    path="/b/:id"
+                >
                     <BookView
                         book={book}
                         handler={handler}
@@ -57,19 +49,24 @@ export default class RouteBook extends React.Component<Props, State>{
                     >
                     </BookView>
                 </Route>
-                <Route path="/b/author/:id">
+                <Route
+                    path="/b/author/:id"
+                >
                     <AuthorView
                         author={this.author()}
                         state={location.state}
                         authorInterface={AuthorInterface.FULL}
                         arrayId={0}
                     >
-                        Tra
                     </AuthorView>
                 </Route>
                 <Row>
-                    <Route path="/b/edit/">
-                        <Col>
+                    <Route
+                        path="/b/edit/"
+                    >
+                        <Col
+                            className={"RouteBookEditorCol"}
+                        >
                             <Route path="/b/edit/:id" >
                             <BookEditor
                                 book={book}
@@ -82,20 +79,28 @@ export default class RouteBook extends React.Component<Props, State>{
                             </BookEditor>
                             </Route>
                         </Col>
-                        <Col>
-                            <Route path="/b/edit/author/:fullName">
+                        <Col
+                            className={"RouteAuthorEditorCol"}
+                        >
+                            <Route
+                                path="/b/edit/author/:fullName"
+                            >
                                 <AuthorEditor authorInterface={AuthorInterface.FULL}
                                               state={location.state}
                                               history={history}
                                 />
                             </Route>
-                            <Route path="/b/edit/image/:id">
+                            <Route
+                                path="/b/edit/image/:id"
+                            >
                                 <ImageEditor state={location.state}
                                              history={history}
                                 />
                             </Route>
                         </Col>
-                            <Route path="/b/edit/save/:id">
+                            <Route
+                                path="/b/edit/save/:id"
+                            >
                                 <PopUp
                                     id={book?.id}
                                     history={history}
@@ -107,5 +112,15 @@ export default class RouteBook extends React.Component<Props, State>{
                 </Row>
             </Switch>
         )
+    }
+
+    author = () => {
+        const {
+            location,
+        } = this.props;
+        if(location.state) {
+            const {author} = location.state as any;
+            return author;
+        }
     }
 }

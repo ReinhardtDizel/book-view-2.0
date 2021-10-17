@@ -3,8 +3,8 @@ import Card from "react-bootstrap/Card";
 import {Col, ListGroupItem} from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup'
 import {Author} from "../../Models/Author";
-import {representTime} from "../../Functions/representTime";
-import {getBookCover, JPEG_IMAGE_DATA} from "../Image/ImageTools";
+import {DateTools} from "../../Tools/DateTools";
+import {getBookCover, JPEG_IMAGE_DATA} from "../../Tools/ImageTools";
 import {Book} from "../../Models/Book";
 
 const Link = require("react-router-dom").Link;
@@ -21,47 +21,77 @@ export default class BookRow extends React.Component<Props, State > {
         this.state = {
         };
     }
-
     render() {
         const {
             book,
         } = this.props;
         const base64Image = getBookCover(book);
+        const book_id_key = book.id?book.id:"noId";
         return(
-            <Col xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto' className="bookCard">
-                <Card className = "box">
-                    <Link key={book.id}
-                          to={{
-                              pathname: `/b/${book.id}`,
-                              search: `?id=${book.id}`
+                <Card
+                    key={book_id_key + "Card"}
+                    className = "BookBox"
+                >
+                    <Link
+                        key={book_id_key + "Link"}
+                        to={{
+                            pathname: `/b/${book.id}`,
+                            search: `?id=${book.id}`
                           }}
-                          className="linkBook"
+                        className="linkBook"
                     >
-                    <Card.Img variant="top" src={`${JPEG_IMAGE_DATA},${base64Image}`} />
-                    <Card.Body>
-                        <Card.Title>
-                            {
-                                book.title
-                            }
-                        </Card.Title>
-                    </Card.Body>
-                    <ListGroup  variant="flush" className="list-group-flush">
-                        <ListGroupItem variant="secondary">
-                            <Card.Text>
+                        <Card.Img
+                            key={book_id_key + "Img"}
+                            className={"BookCover"}
+                            variant="top"
+                            src={`${JPEG_IMAGE_DATA},${base64Image}`}
+                        />
+                        <Card.Body
+                            key={book_id_key + "Card_Body"}
+                            className={"bookCardBody"}
+                        >
+
+                            <Card.Title
+                                key={book_id_key + "Card_Title"}
+                                className={"bookCardTitle"}
+                            >
                                 {
-                                    this.authorsName(book.authors)
+                                    book.title
                                 }
-                            </Card.Text>
-                        </ListGroupItem>
-                        <ListGroupItem disabled>
-                            {
-                                representTime(book.publishing)
-                            }
-                        </ListGroupItem>
-                    </ListGroup>
+                            </Card.Title>
+                        </Card.Body>
+                        <ListGroup
+                            key={book_id_key + "ListGroup"}
+                            variant="flush"
+                            className="list-group-flush"
+                        >
+                            <ListGroupItem
+                                key={book_id_key + "ListGroupItem1"}
+                                variant="secondary"
+                                className="ListGroupItem1"
+                            >
+                                <Card.Text
+                                    key={book_id_key + "Card_Text"}
+                                    className="Card_Text"
+                                >
+                                    {
+                                        this.authorsName(book.authors)
+                                    }
+                                </Card.Text>
+                            </ListGroupItem>
+                            <ListGroupItem
+                                key={book_id_key + "ListGroupItem2"}
+                                className="ListGroupItem2"
+                                disabled
+                            >
+                                {
+                                    DateTools(book.publishing)
+                                }
+                            </ListGroupItem>
+                        </ListGroup>
                     </Link>
                 </Card>
-            </Col>
+
         )
     }
     authorsName = (authors?:Author[]) => {

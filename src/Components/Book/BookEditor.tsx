@@ -1,13 +1,12 @@
 import * as React from "react";
-import {Button, Card, Col, FormControl, InputGroup, Container, Row} from "react-bootstrap";
+import {Button, Card, Col, FormControl, InputGroup, Row} from "react-bootstrap";
 import Form from 'react-bootstrap/Form'
 import {Author} from "../../Models/Author";
 import {Book} from "../../Models/Book";
 import {AuthorInterface} from "../Author/AuthorEditor";
 import AuthorView from "../Author/AuthorView";
 import {Image} from "../../Models/Image";
-import {getBookCover, JPEG_IMAGE_DATA} from "../Image/ImageTools";
-import {deleteBook} from "../../Api/Api";
+import {getBookCover, JPEG_IMAGE_DATA, JPEG_NO_IMAGE} from "../../Tools/ImageTools";
 
 
 const Link = require("react-router-dom").Link;
@@ -31,7 +30,6 @@ interface State {
     pic?: Image[];
 }
 
-
 export default class BookEditor extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
@@ -47,201 +45,18 @@ export default class BookEditor extends React.Component<Props, State>{
         this.handleInputChange = this.handleInputChange.bind(this);
         this.PutBook = this.PutBook.bind(this);
     }
-
-    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
-        if(prevProps != this.props) {
-            const {history,state} = this.props;
-            if(history !== undefined) {
-                if(history.location !== undefined) {
-                    if(history.location.hash !== undefined && history.location.hash !== null && history.location.hash !== "") {
-                        if(history.location.hash == "#authorSave") {
-                            this.authorChange(state.arrayId);
-                        }
-                        else if(history.location.hash == "#authorDelete") {
-                            this.authorRemove(state.arrayId);
-                        }
-                        else if(history.location.hash == "#imageSave") {
-                            this.imageSave(state.pic);
-                        }
-                        else if(history.location.hash == "#addBook") {
-                            console.log("addBook")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    imageSave = (i:Image) => {
-        let image: Image[] = [];
-        if(i !== undefined && i !== null) {
-            image.push(i);
-            this.setState({
-               pic:image,
-            });
-        }
-    }
-
-    authorChange = (arrayId: number) => {
-        const {authors} = this.state;
-        const {state} = this.props;
-        if(authors !== undefined && arrayId !== null && arrayId !== undefined) {
-
-            if(state.author !== undefined) {
-                authors[arrayId].bio = state.author.bio;
-                authors.splice(arrayId,1,state.author);
-                this.setState({
-                    authors: authors,
-                });
-
-            }
-        }
-
-    }
-
-    handleInputChange = (event: any):void => {
-        const { name, value } = event.target;
-        if( name == 'title' || 'description') {
-            this.setState({
-                [name]: value,
-            } as any);
-        }
-    }
-
-
-
-    PutBook = (e:any) => {
-        e.preventDefault();
-        const {put} = this.props;
-        const{id, title, description, publishing , authors, pic} = this.state;
-        const book: Book = {
-            id: id,
-            title: title,
-            description: description,
-            publishing: publishing,
-            images: pic,
-            authors: authors,
-        }
-        if(put !== undefined && put !== null){
-            if(book !== undefined) {
-                put(book);
-            }
-        }
-    }
-
-    deleteBook = (e:any) => {
-        e.preventDefault();
-        const{id} = this.state;
-        const{deleteBook} = this.props;
-        if(id !== undefined && id !== null) {
-            if(deleteBook !== undefined && deleteBook !== null) {
-                deleteBook(id);
-            }
-        }
-    }
-
-    authorAdd = () => {
-       let author: Author = {
-           id: "",
-           name: {
-               fullName: '',
-               firstName: '',
-               middleName: '',
-               shortName: '',
-               lastName: '',
-           },
-           bio: "",
-       }
-       let authors: Author[] | undefined = this.state.authors;
-       if(authors != undefined && authors.length <= 10) {
-           authors.push(author);
-           this.setState({
-               authors: authors,
-           });
-       }
-    }
-
-    authorRemove = (id: number) => {
-        let authors: Author[] | undefined = this.state.authors;
-        if(authors != undefined && authors.length > 0) {
-            authors.splice(id,1);
-            this.setState({
-                authors: authors,
-            });
-        }
-    }
-
-    authorsCreate = () => {
-        const {state} = this.props;
-        const {authors} = this.state;
-        let arrayId = 0;
-        return (
-            authors!== null && authors !== undefined)
-            ? authors.map(
-                (author) => {
-                    return(
-                        <AuthorView authorInterface={AuthorInterface.LIGHT}
-                                    author={author}
-                                    state={state}
-                                    arrayId={arrayId++}
-                        />
-
-                    )
-                }
-            ):null
-    }
-
-    componentDidMount() {
-        const {book, history} = this.props;
-        if (book !== undefined && book !== null ) {
-            this.setState({
-                title: book.title,
-                authors: book.authors,
-                publishing: book.publishing,
-                description: book.description,
-                pic: book.images,
-            });
-        }
-        if(history !== undefined) {
-            if(history.location !== undefined) {
-                if(history.location.hash !== undefined && history.location.hash !== null && history.location.hash !== "") {
-                    if(history.location.hash == "#addBook") {
-                        const book: Book = {
-                            id: undefined,
-                            title: '',
-                            description: '',
-                            publishing: undefined,
-                            images: undefined,
-                            authors: undefined,
-                        }
-                        this.setState({
-                            id: "new",
-                            book:book,
-                            title: '',
-                            authors: [] as Author[],
-                            description: '',
-                            publishing: undefined,
-                            pic: [] as Image[],
-                        });
-                    }
-                }
-            }
-        }
-    }
-
     render() {
         const {
             book,
             title,
             publishing,
             description,
-            authors,
         } = this.state;
 
         let backPath = `/b/${book?.id}`;
         let backSearch = `?id=${book?.id}`;
 
-        if(book?.id == undefined || book?.id == null) {
+        if(book?.id === undefined) {
             backPath = `/`;
             backSearch = '';
         }
@@ -249,8 +64,7 @@ export default class BookEditor extends React.Component<Props, State>{
         const{activateLink, showPopUp} = this.props.state;
         const base64Image = getBookCover(book);
         return(
-            <Container fluid className={'BookEditorContainer'}>
-                <Row>
+                <Row className={'BookEditorContainer'}>
                     <Col  className={'BookEditorImage'}
                           xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'
                     >
@@ -264,7 +78,7 @@ export default class BookEditor extends React.Component<Props, State>{
                         }}
                               className="ImageEditorLink"
                         >
-                            <Card.Img variant="top" src={`${JPEG_IMAGE_DATA},${base64Image?base64Image:''}`}>
+                            <Card.Img className={"BookCover"} variant="top" src={`${JPEG_IMAGE_DATA},${base64Image?base64Image:JPEG_NO_IMAGE}`}>
                             </Card.Img>
                         </Link>
                     </Col>
@@ -327,7 +141,7 @@ export default class BookEditor extends React.Component<Props, State>{
                                     <Button variant="secondary"
                                             className='BookEditor_BackButton'
                                             size="sm"
-                                            disabled = {activateLink?false:true}
+                                            disabled = {!activateLink}
                                     >
                                         <Link key={"backLink"+book?.id}
                                               to={{
@@ -344,7 +158,7 @@ export default class BookEditor extends React.Component<Props, State>{
                                         style = {{marginLeft: 10}}
                                         variant="secondary"
                                         size="sm"
-                                        disabled = {(activateLink && !showPopUp)?false:true}
+                                        disabled = {(!(activateLink && !showPopUp))}
                                     >
                                         <Link key={"saveLink"+book?.id}
                                               onClick={this.PutBook}
@@ -372,7 +186,190 @@ export default class BookEditor extends React.Component<Props, State>{
                         </Card>
                     </Col>
                 </Row>
-            </Container>
         )
+    }
+
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
+        if(prevProps !== this.props) {
+            const {history,state} = this.props;
+            if(history !== undefined) {
+                if(history.location !== undefined) {
+                    if(history.location.hash !== undefined && history.location.hash !== null && history.location.hash !== "") {
+                        if(history.location.hash === "#authorSave") {
+                            this.authorChange(state.arrayId);
+                        }
+                        else if(history.location.hash === "#authorDelete") {
+                            this.authorRemove(state.arrayId);
+                        }
+                        else if(history.location.hash === "#imageSave") {
+                            this.imageSave(state.pic);
+                        }
+                        else if(history.location.hash === "#addBook") {
+                            this.addBookChangeState(history);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    componentDidMount() {
+        const {book, history} = this.props;
+        if (book !== undefined && book !== null ) {
+            this.setState({
+                title: book.title,
+                authors: book.authors,
+                publishing: book.publishing,
+                description: book.description,
+                pic: book.images,
+            });
+        }
+        this.addBookChangeState(history);
+    }
+
+    addBookChangeState = (history:any) => {
+        if(history !== undefined) {
+            if(history.location !== undefined) {
+                if(history.location.hash !== undefined && history.location.hash !== null && history.location.hash !== "") {
+                    if(history.location.hash === "#addBook") {
+                        const book: Book = {
+                            id: undefined,
+                            title: '',
+                            description: '',
+                            publishing: undefined,
+                            images: undefined,
+                            authors: undefined,
+                        }
+                        this.setState({
+                            id: "new",
+                            book:book,
+                            title: '',
+                            authors: [] as Author[],
+                            description: '',
+                            publishing: undefined,
+                            pic: [] as Image[],
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    imageSave = (i:Image) => {
+        let image: Image[] = [];
+        if(i !== undefined && i !== null) {
+            image.push(i);
+            this.setState({
+                pic:image,
+            });
+        }
+    }
+
+    authorChange = (arrayId: number) => {
+        const {authors} = this.state;
+        const {state} = this.props;
+        if(authors !== undefined && arrayId !== null && arrayId !== undefined) {
+            if(state.author !== undefined) {
+                authors[arrayId].bio = state.author.bio;
+                authors.splice(arrayId,1,state.author);
+                this.setState({
+                    authors: authors,
+                });
+
+            }
+        }
+    }
+
+    handleInputChange = (event: any):void => {
+        const { name, value } = event.target;
+        if( name === 'title' || 'description') {
+            this.setState({
+                [name]: value,
+            } as any);
+        }
+    }
+
+    PutBook = (e:any) => {
+        e.preventDefault();
+        const {put} = this.props;
+        const{id, title, description, publishing , authors, pic} = this.state;
+        const book: Book = {
+            id: id,
+            title: title,
+            description: description,
+            publishing: publishing,
+            images: pic,
+            authors: authors,
+        }
+        if(put !== undefined && put !== null){
+            if(book !== undefined) {
+                put(book);
+            }
+        }
+    }
+
+    deleteBook = (e:any) => {
+        e.preventDefault();
+        const{id} = this.state;
+        const{deleteBook} = this.props;
+        if(id !== undefined && id !== null) {
+            if(deleteBook !== undefined && deleteBook !== null) {
+                deleteBook(id);
+            }
+        }
+    }
+
+    authorAdd = () => {
+        let author: Author = {
+            id: "",
+            name: {
+                fullName: '',
+                firstName: '',
+                middleName: '',
+                shortName: '',
+                lastName: '',
+            },
+            bio: "",
+        }
+        let authors: Author[] | undefined = this.state.authors;
+        if(authors !== undefined && authors.length <= 10) {
+            authors.push(author);
+            this.setState({
+                authors: authors,
+            });
+        }
+    }
+
+    authorRemove = (id: number) => {
+        let authors: Author[] | undefined = this.state.authors;
+        if(authors !== undefined && authors.length > 0) {
+            authors.splice(id,1);
+            this.setState({
+                authors: authors,
+            });
+        }
+    }
+
+    authorsCreate = () => {
+        const {state} = this.props;
+        const {authors} = this.state;
+        let arrayId = 0;
+        return (
+            authors!== null && authors !== undefined)
+            ? authors.map(
+                (author) => {
+                    const author_key:string = author.id?author.id:"noId" + arrayId;
+                    return(
+                        <AuthorView
+                            key={author_key}
+                            authorInterface={AuthorInterface.LIGHT}
+                            author={author}
+                            state={state}
+                            arrayId={arrayId++}
+                        />
+
+                    )
+                }
+            ):null
     }
 }

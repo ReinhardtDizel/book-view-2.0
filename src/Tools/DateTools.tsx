@@ -1,6 +1,6 @@
-import rusMonth from "../Locales/Rus";
+import {monthList} from "../Locales/Rus";
 
-export function representTime(d: Date | undefined) {
+export function DateTools(d: Date | undefined) {
     if(d == undefined) {
         return undefined;
     }
@@ -19,6 +19,6 @@ export function representTime(d: Date | undefined) {
         month = month.replaceAll('0','');
     }
 
-    let final = day + " " + rusMonth[Number(month)] + " " + year;
+    let final = day + " " + monthList[Number(month)] + " " + year;
     return final;
 }

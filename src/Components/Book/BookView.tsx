@@ -1,9 +1,10 @@
 import * as React from "react";
-import {Button, Card, Col, Container, Row} from "react-bootstrap";
+import {Button, Card, Col, Row} from "react-bootstrap";
+import {getBookCover, JPEG_IMAGE_DATA, JPEG_NO_IMAGE} from "../../Tools/ImageTools";
+import {DateTools} from "../../Tools/DateTools";
 import {Author} from "../../Models/Author";
-import {representTime} from "../../Functions/representTime";
 import {Book} from "../../Models/Book";
-import {getBookCover, JPEG_IMAGE_DATA} from "../Image/ImageTools";
+
 
 const Link = require("react-router-dom").Link;
 
@@ -42,13 +43,12 @@ export default class BookView extends React.Component<Props, State>{
             image,
         } = this.state;
         return(
-            <Container fluid className={'bookViewContainer'}>
-                <Row>
+                <Row className={'bookViewContainer'}>
                     <Col className={'bookViewImage'} xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'>
-                        <Card.Img key={"ImageURL"} variant="top" src={`${JPEG_IMAGE_DATA},${image?image:''}`}/>
+                        <Card.Img className={"BookCover"} key={"ImageURL"} variant="top" src={`${JPEG_IMAGE_DATA},${image?image:JPEG_NO_IMAGE}`}/>
                     </Col>
                     <Col>
-                        <Card className={'bookViewCard-1'}>
+                        <Card className={'bookViewCard'}>
                             <Card.Body>
                                 <Card.Text key={"Title"}>
                                     {
@@ -60,7 +60,7 @@ export default class BookView extends React.Component<Props, State>{
                                 </Card.Text>
                                 <Card.Text key={"PublishingDate"}>
                                     {
-                                        representTime(publishing)
+                                        DateTools(publishing)
                                     }
                                 </Card.Text>
                                 <Card.Text key={"Description"}>
@@ -102,7 +102,6 @@ export default class BookView extends React.Component<Props, State>{
                         </Card>
                     </Col>
                 </Row>
-            </Container>
         )
     }
 

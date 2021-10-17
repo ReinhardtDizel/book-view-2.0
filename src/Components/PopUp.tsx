@@ -50,10 +50,10 @@ export default class PopUp extends React.Component<Props,State>{
                     show={showPopUp}
                     onHide={showPopUp?false:true}
                     dialogClassName="modal-90w"
-                    aria-labelledby="example-custom-modal-styling-title"
+                    aria-labelledby="custom-modal-styling-title"
                 >
                     <Modal.Header closeButton onClick={this.hide}>
-                        <Modal.Title id="example-custom-modal-styling-title">
+                        <Modal.Title id="custom-modal-styling-title">
                             Saved Successfully
                         </Modal.Title>
                     </Modal.Header>
