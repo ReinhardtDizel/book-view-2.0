@@ -36,16 +36,13 @@ function isCover(element:Image, index:number, array:Image[]){
     }
 }
 
-export function getBookCover(book:Book | undefined) {
-    if(book !== undefined && book !== null) {
-        const images:Image[] | undefined = book.images;
-        if(images !== undefined && images !== null) {
-            const image = images.find(isCover)
-            if(image !== undefined && image !== null) {
-                const {pic} = image;
-                if (pic !== undefined && pic !== null) {
-                    return pic;
-                }
+export function getBookCover(images:Image[] | undefined) {
+    if(images !== undefined && images !== null) {
+        const image = images.find(isCover)
+        if (image !== undefined && image !== null) {
+            const {pic} = image;
+            if (pic !== undefined && pic !== null) {
+                return pic;
             }
         }
     }

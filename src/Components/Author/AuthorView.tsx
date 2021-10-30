@@ -2,6 +2,7 @@ import * as React from "react";
 import {Button, Card, Col} from "react-bootstrap";
 import {Author} from "../../Models/Author";
 import {AuthorInterface} from "./AuthorEditor";
+import {userLoginRole} from "../../Api/Api";
 
 const Link = require("react-router-dom").Link;
 
@@ -48,11 +49,9 @@ export default class AuthorView extends React.Component<Props, State> {
             author,
             fullName,
             bio,
-            activateLink,
-            bookId,
         } = this.state;
-        const {arrayId, authorInterface} = this.props;
-        const fontSize = 13;
+        const {authorInterface} = this.props;
+        console.log(this.props)
         if(author !== undefined && author !== null) {
             return (
                 <Col className={'PresentationContainer'} style={{backgroundColor:"lightsteelblue"}}>
@@ -70,29 +69,7 @@ export default class AuthorView extends React.Component<Props, State> {
                                     {(authorInterface == AuthorInterface.FULL)?bio:''}
                                     <Card.Text >
                                         {this.interface()}
-                                        <Button style = {{marginLeft: 10}}
-                                                variant="secondary"
-                                                className='EditButton'
-                                                size="sm"
-                                                disabled={activateLink?false:true}
-                                        >
-                                            <Link key={author.id}
-                                                  to={{
-                                                      pathname: `/b/edit/author/${(fullName)?fullName:"new"}`,
-                                                      state: {
-                                                          author: author,
-                                                          activateLink: false,
-                                                          bookId: bookId,
-                                                          arrayId: arrayId,
-                                                      }
-                                                  }}
-                                                  className="editLink"
-                                            >
-                                                <Card.Text style={{fontSize: fontSize}}>
-                                                    Edit
-                                                </Card.Text>
-                                            </Link>
-                                        </Button>
+                                        {this.adminToolEditAuthor()}
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
@@ -103,7 +80,7 @@ export default class AuthorView extends React.Component<Props, State> {
             )
         }
     }
-    componentWillMount() {
+    componentDidMount() {
         const {author,state} = this.props;
         if(author) {
             try {
@@ -170,9 +147,47 @@ export default class AuthorView extends React.Component<Props, State> {
         }
     }
 
+    adminToolEditAuthor = () => {
+        if (userLoginRole() === "admin") {
+            const {
+                author,
+                activateLink,
+                bookId,
+            } = this.state;
+            const {arrayId, state} = this.props;
+            const book = state.book;
+            if (bookId !== undefined && bookId !== null) {
+                return (
+                    <Button
+                        variant="secondary"
+                        className='AdminAuthorButton'
+                        size="sm"
+                        disabled={activateLink ? false : true}
+                    >
+                        <Link key={author?.id}
+                              to={{
+                                  pathname: `/b/edit/author/${(author?.name?.fullName) ? author?.name?.fullName : "new"}`,
+                                  state: {
+                                      author: author,
+                                      bookId: bookId,
+                                      arrayId: arrayId,
+                                      book: book,
+                                  }
+                              }}
+                              className="editLink"
+                        >
+                            Edit
+                        </Link>
+                    </Button>
+                )
+            }
+        }
+    }
+
     interface = () => {
-        const {authorInterface} = this.props;
+        const {authorInterface, state} = this.props;
         const {bookId} = this.state;
+        const book = state.book;
         if(authorInterface == AuthorInterface.FULL)  {
             return (
                 <Button variant="secondary"
@@ -182,7 +197,9 @@ export default class AuthorView extends React.Component<Props, State> {
                     <Link key={"backLink"+bookId}
                           to={{
                               pathname: `/b/${bookId}`,
-                              search: `?id=${bookId}`
+                              state: {
+                                  book: book,
+                              }
                           }}
                           className="backLink"
 

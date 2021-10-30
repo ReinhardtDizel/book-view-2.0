@@ -4,6 +4,8 @@ import {getBookCover, JPEG_IMAGE_DATA, JPEG_NO_IMAGE} from "../../Tools/ImageToo
 import {DateTools} from "../../Tools/DateTools";
 import {Author} from "../../Models/Author";
 import {Book} from "../../Models/Book";
+import {Image} from "../../Models/Image";
+import {userLoginRole} from "../../Api/Api";
 
 
 const Link = require("react-router-dom").Link;
@@ -11,7 +13,7 @@ const Link = require("react-router-dom").Link;
 interface Props {
     handler?: (e:any) => void;
     history: any;
-    book?: Book;
+    state?: any;
 }
 interface State {
     id?: string;
@@ -19,7 +21,7 @@ interface State {
     title?: string;
     publishing?: Date;
     description?: string;
-    image?: string;
+    pic?: Image[];
 }
 
 export default class BookView extends React.Component<Props, State>{
@@ -31,7 +33,7 @@ export default class BookView extends React.Component<Props, State>{
             title: '',
             publishing: undefined,
             description: '',
-            image: '',
+            pic: [] as Image[],
         };
     }
     render() {
@@ -40,79 +42,85 @@ export default class BookView extends React.Component<Props, State>{
             title,
             publishing,
             description,
-            image,
+            pic,
         } = this.state;
+        const base64Image = getBookCover(pic);
         return(
-                <Row className={'bookViewContainer'}>
-                    <Col className={'bookViewImage'} xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'>
-                        <Card.Img className={"BookCover"} key={"ImageURL"} variant="top" src={`${JPEG_IMAGE_DATA},${image?image:JPEG_NO_IMAGE}`}/>
-                    </Col>
-                    <Col>
-                        <Card className={'bookViewCard'}>
-                            <Card.Body>
-                                <Card.Text key={"Title"}>
-                                    {
-                                        title ? title : "noTitle"
-                                    }
-                                </Card.Text>
-                                <Card.Text key={"Author"}>
-                                    {this.authorViewLink()}
-                                </Card.Text>
-                                <Card.Text key={"PublishingDate"}>
-                                    {
-                                        DateTools(publishing)
-                                    }
-                                </Card.Text>
-                                <Card.Text key={"Description"}>
-                                    {
-                                        description ? description : "noDescription"
-                                    }
-                                </Card.Text>
-                                <Card.Text key={"links"}>
-                                    <Button
-                                        className='BackButton'
-                                        variant="secondary"
-                                        size="sm"
+            <Card className={'bookViewCard'}>
+                <Card.Body>
+                    <Row className={'bookViewContainer'}>
+                        <Col className={"bookViewImage"}>
+                            <Card.Img
+                                className={"BookCover"}
+                                key={"ImageURL"}
+                                variant="top"
+                                src={`${JPEG_IMAGE_DATA},${base64Image?base64Image:JPEG_NO_IMAGE}`}
+                            />
+                        </Col>
+                        <Col className={"bookViewInfo"}>
+                            <Card.Text key={"Title"}>
+                                {
+                                    title ? title : "noTitle"
+                                }
+                            </Card.Text>
+                            <Card.Text key={"Author"}>
+                                {this.authorViewLink()}
+                            </Card.Text>
+                            <Card.Text key={"PublishingDate"}>
+                                {
+                                    DateTools(publishing)
+                                }
+                            </Card.Text>
+                            <Card.Text key={"Description"}>
+                                {
+                                    description ? description : "noDescription"
+                                }
+                            </Card.Text>
+                            <Card.Text
+                                key={"links"}
+                            >
+                                <Button
+                                    className='BackButton'
+                                    variant="secondary"
+                                    size="sm"
+                                >
+                                    <Link
+                                        className = "backLink"
+                                        to={`/`}
                                     >
-                                        <Link
-                                            className = "backLink"
-                                            to={`/`}
-                                        >
-                                            Back
-                                        </Link>
-                                    </Button>
-                                    <Button
-                                        className='EditButton'
-                                        variant="secondary"
-                                        size="sm"
-                                    >
-                                        <Link
-                                            className = "editLink"
-                                            to={{
-                                                pathname:`/b/edit/${id}`,
-                                                search:`?id=${id}`,
-                                                state:  { activateLink: true, bookId:id}
-                                            }}
-                                        >
-                                            Edit
-                                        </Link>
-                                    </Button>
-                                </Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
+                                        Back
+                                    </Link>
+                                </Button>
+                                {this.adminToolEditBook()}
+                            </Card.Text>
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
         )
     }
 
     componentDidMount() {
-        let search = this.props.history.location.search;
-        this.getData(search.replaceAll('?id=', ''));
+        const {state} = this.props;
+        if(state !== undefined && state !== null) {
+            const book = state.book;
+            if(book !== undefined && book !== null){
+                this.setState({
+                    id: book.id,
+                    authors: book.authors,
+                    title: book.title,
+                    publishing: book.publishing,
+                    description: book.description,
+                    pic: book.images,
+                });
+            }
+        }
     }
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
         if(prevProps !== this.props) {
-            const {book} = this.props
+            const {state} = this.props
+            const book = state.book;
             if(book !== undefined && book !== null) {
                 this.setState({
                     id: book.id,
@@ -120,7 +128,7 @@ export default class BookView extends React.Component<Props, State>{
                     title: book.title,
                     publishing: book.publishing,
                     description: book.description,
-                    image: getBookCover(book),
+                    pic: book.images,
                 });
             }
         }
@@ -134,8 +142,41 @@ export default class BookView extends React.Component<Props, State>{
         }
     }
 
+    adminToolEditBook = () => {
+        if (userLoginRole() === "admin") {
+            const {state} = this.props;
+            const book = state.book;
+            const id = book.id;
+            if (id !== undefined && id !== null && book !== undefined && book !== null) {
+                return (
+                    <Button
+                        className='AdminEditButton'
+                        variant="secondary"
+                        size="sm"
+                    >
+                        <Link
+                            className="editLink"
+                            to={{
+                                pathname: `/b/edit/${id}`,
+                                state: {
+                                    activateLink: true,
+                                    bookId: id,
+                                    book: book,
+                                }
+                            }}
+                        >
+                            edit this book
+                        </Link>
+                    </Button>
+                )
+            }
+        }
+    }
+
     authorViewLink = () => {
         const {authors, id} = this.state;
+        const {state} = this.props;
+        const book = state.book;
         return (
             authors!== null && authors !== undefined)
             ? authors.map(
@@ -152,6 +193,7 @@ export default class BookView extends React.Component<Props, State>{
                                         state: {
                                             author: author,
                                             bookId: id ? id : "undefined_authorView",
+                                            book: book,
                                         }
                                     }}
                                 >

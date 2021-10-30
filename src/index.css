@@ -7,15 +7,19 @@ body{
     width: border-box;
 }
 .AppHeadRow{
-    background-color: #2d2d31;
+    background-color: rgba(5, 115, 24, 0.5);
+    width: auto;
 }
 .AdminTools{
     background-color: rgba(5, 115, 24, 0.5);
 }
-.AdminAddBook {
+.AdminAddBook, .AdminEditButton, .AdminAuthorButton, .RegistrationButton{
     margin-bottom: 1%;
     margin-top: 1%;
     width: auto;
+}
+.AdminEditButton, .AdminAuthorButton{
+    margin-left: 1rem;
 }
 .AppBooksRow{
     background-color: #2d2d31;
@@ -43,16 +47,20 @@ body{
     margin-right: 0rem;
     margin-left: 0rem;
 }
-.BookEditorImage,.bookViewImage {
+.BookEditorImage {
     margin: 1%;
     width: 15rem;
 }
-.bookViewCard{
-    margin: 1%;
+.bookViewImage{
 }
-.BookEditorCard-1{
-    margin: 1%;
-    width: auto;
+.bookViewInfo{
+}
+.bookViewCard{
+    margin-left: 15%;
+    width: 70%;
+}
+.BookEditorCard{
+
 }
 .bookTable{
     padding-top: 1%;
@@ -69,8 +77,13 @@ body{
 .EditButton{
     margin-left: 1rem;
 }
+.Registration-Form {
+    padding: 2rem;
+    color: #ece7e7;
+    text-decoration: inherit;
+}
 .saveLink, .backLink, .editLink, .deleteLink, .ImageEditorLink, .addLink {
-    color: #FFF;
+    color: #f1ebeb;
     text-decoration: inherit;
 }
 .authorLink, .linkBook {

@@ -1,7 +1,7 @@
 import axios from "axios";
-import {Book} from "../Models/Book";
 
 export const booksDataURL = "http://localhost:8080/books/";
+export const registrationURL = "http://localhost:8081/registration/";
 
 axios.create({
     responseType: "json",
@@ -51,6 +51,19 @@ export const deleteBook = async (id:string) => {
     return "ERROR";
 }
 
+export const submitUser = async (postData:any) => {
+    if(postData !== undefined && postData !== null) {
+
+        console.log(postData);
+
+    }
+    return "ERROR";
+}
+
 export const simulateNetworkRequest = ():any => {
     return new Promise((resolve) => setTimeout(resolve, 2000));
+}
+
+export const userLoginRole = () => {
+    return "";
 }

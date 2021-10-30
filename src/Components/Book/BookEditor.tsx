@@ -6,7 +6,7 @@ import {Book} from "../../Models/Book";
 import {AuthorInterface} from "../Author/AuthorEditor";
 import AuthorView from "../Author/AuthorView";
 import {Image} from "../../Models/Image";
-import {getBookCover, JPEG_IMAGE_DATA, JPEG_NO_IMAGE} from "../../Tools/ImageTools";
+import {arrayToBase64, getBookCover, JPEG_IMAGE_DATA, JPEG_NO_IMAGE} from "../../Tools/ImageTools";
 
 
 const Link = require("react-router-dom").Link;
@@ -15,7 +15,6 @@ const Link = require("react-router-dom").Link;
 interface Props {
     put?: (e:any) => void;
     deleteBook?: (e:any) => void;
-    book?:Book;
     handler?: (e:any) => any;
     state?: any;
     history?: any;
@@ -34,8 +33,8 @@ export default class BookEditor extends React.Component<Props, State>{
     constructor(props: Props) {
         super(props);
         this.state = {
-            book: this.props.book,
-            id: this.props?.book?.id,
+            book: undefined,
+            id: undefined,
             title: '',
             authors: [] as Author[],
             description: '',
@@ -51,141 +50,133 @@ export default class BookEditor extends React.Component<Props, State>{
             title,
             publishing,
             description,
+            pic,
         } = this.state;
 
         let backPath = `/b/${book?.id}`;
-        let backSearch = `?id=${book?.id}`;
 
         if(book?.id === undefined) {
             backPath = `/`;
-            backSearch = '';
         }
 
         const{activateLink, showPopUp} = this.props.state;
-        const base64Image = getBookCover(book);
+        const base64Image = getBookCover(pic);
         return(
-                <Row className={'BookEditorContainer'}>
-                    <Col  className={'BookEditorImage'}
-                          xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'
-                    >
-                        <Link
-                            to={{
+            <Card className={'BookEditorCard'} style={{backgroundColor:"ghostwhite"}}>
+                <Card.Body>
+                    <Link
+                        className="ImageEditorLink"
+                        to={{
                             pathname: `/b/edit/image/${book?.id}`,
                             state: {
                                 activateLink: false,
                                 bookId: book?.id,
                             }
                         }}
-                              className="ImageEditorLink"
-                        >
-                            <Card.Img className={"BookCover"} variant="top" src={`${JPEG_IMAGE_DATA},${base64Image?base64Image:JPEG_NO_IMAGE}`}>
-                            </Card.Img>
-                        </Link>
-                    </Col>
-                    <Col  xl ='auto' sm = 'auto' lg = 'auto' md = 'auto' xs = 'auto' xxl = 'auto'
                     >
-                        <Card className={'BookEditorCard-1'} style={{backgroundColor:"ghostwhite"}}>
-                            <Card.Body>
-                                <Card.Text key={"Title"}>
-                                    <InputGroup size="sm" className="BookEditor_mb-0">
-                                        <InputGroup.Text id="inputGroup-sizing-default">Title</InputGroup.Text>
-                                        <FormControl
-                                            value={title}
-                                            onChange={this.handleInputChange}
-                                            name="title"
-                                            aria-label="Default"
-                                            aria-describedby="inputGroup-sizing-default"
-                                        />
-                                    </InputGroup>
-                                </Card.Text>
-                                <Card.Text key={"Publishing Date"}>
-                                    <InputGroup size="sm" className="BookEditor_mb-3">
-                                        <InputGroup.Text id="inputGroup-sizing-default">Publishing</InputGroup.Text>
-                                        <FormControl
-                                            value={publishing?.toString()}
-                                            onChange={this.handleInputChange}
-                                            name="publishing"
-                                            aria-label="Default"
-                                            aria-describedby="inputGroup-sizing-default"
-                                        />
-                                    </InputGroup>
-                                </Card.Text>
-                                <Card.Text key={"Description"}>
-                                    <>
-                                        <Form.Group className="BookEditor_mb-3" controlId="exampleForm.ControlTextarea1">
-                                            <Form.Label>Book Description:</Form.Label>
-                                            <Form.Control as="textarea" rows={3}
-                                                          defaultValue={description}
-                                                          onChange={this.handleInputChange}
-                                                          name="description"
-                                            />
-                                        </Form.Group>
-                                    </>
-                                </Card.Text>
-                                <Card.Text>
-                                    <Col>
-                                        <Button
-                                            onClick={this.authorAdd}
-                                            className='BookEditor_authorAdd'
-                                            size="sm"
-                                            variant="Secondary"
-                                        >
-                                            add Author
-                                        </Button>
-                                    </Col>
-                                </Card.Text>
-                                {this.authorsCreate()}
-                            </Card.Body>
-                            <Card.Body>
-                                <Card.Text key={"Links"}>
-                                    <Button variant="secondary"
-                                            className='BookEditor_BackButton'
-                                            size="sm"
-                                            disabled = {!activateLink}
-                                    >
-                                        <Link key={"backLink"+book?.id}
-                                              to={{
-                                                  pathname: backPath,
-                                                  search: backSearch,
-                                              }}
-                                              className="backLink"
+                        <Card.Img className={"BookCover"} variant="top" src={`${JPEG_IMAGE_DATA},${base64Image?base64Image:JPEG_NO_IMAGE}`}>
+                        </Card.Img>
+                    </Link>
+                    <Card.Text key={"Title"}>
+                        <InputGroup size="sm" className="BookEditor_mb-0">
+                            <InputGroup.Text id="inputGroup-sizing-default">Title</InputGroup.Text>
+                            <FormControl
+                                value={title}
+                                onChange={this.handleInputChange}
+                                name="title"
+                                aria-label="Default"
+                                aria-describedby="inputGroup-sizing-default"
+                            />
+                        </InputGroup>
+                    </Card.Text>
+                    <Card.Text key={"Publishing Date"}>
+                        <InputGroup size="sm" className="BookEditor_mb-3">
+                            <InputGroup.Text id="inputGroup-sizing-default">Publishing</InputGroup.Text>
+                            <FormControl
+                                value={publishing?.toString()}
+                                onChange={this.handleInputChange}
+                                name="publishing"
+                                aria-label="Default"
+                                aria-describedby="inputGroup-sizing-default"
+                            />
+                        </InputGroup>
+                    </Card.Text>
+                    <Card.Text key={"Description"}>
+                        <>
+                            <Form.Group className="BookEditor_mb-3" controlId="exampleForm.ControlTextarea1">
+                                <Form.Label>Book Description:</Form.Label>
+                                <Form.Control as="textarea" rows={3}
+                                              defaultValue={description}
+                                              onChange={this.handleInputChange}
+                                              name="description"
+                                />
+                            </Form.Group>
+                        </>
+                    </Card.Text>
+                    <Card.Text>
+                        <Col>
+                            <Button
+                                onClick={this.authorAdd}
+                                className='BookEditor_authorAdd'
+                                size="sm"
+                                variant="Secondary"
+                            >
+                                add Author
+                            </Button>
+                        </Col>
+                    </Card.Text>
+                    {this.authorsCreate()}
+                </Card.Body>
+                <Card.Body>
+                    <Card.Text key={"Links"}>
+                        <Button variant="secondary"
+                                className='BookEditor_BackButton'
+                                size="sm"
+                                disabled = {!activateLink}
+                        >
+                            <Link key={"backLink"+book?.id}
+                                  to={{
+                                      pathname: backPath,
+                                      state: {
+                                          book: book,
+                                      }
+                                  }}
+                                  className="backLink"
 
-                                        >
-                                            Back
-                                        </Link>
-                                    </Button>
-                                    <Button
-                                        style = {{marginLeft: 10}}
-                                        variant="secondary"
-                                        size="sm"
-                                        disabled = {(!(activateLink && !showPopUp))}
-                                    >
-                                        <Link key={"saveLink"+book?.id}
-                                              onClick={this.PutBook}
-                                              to = {this.props}
-                                              className="saveLink"
-                                        >
-                                            Save
-                                        </Link>
-                                    </Button>
-                                    <Button style={{float: 'right'}}
-                                            variant="secondary"
-                                            className='DeleteButton'
-                                            size="sm"
-                                    >
-                                        <Link
-                                            onClick={this.deleteBook}
-                                            to = {this.props}
-                                            className = "deleteLink"
-                                        >
-                                            Delete
-                                        </Link>
-                                    </Button>
-                                </Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
+                            >
+                                Back
+                            </Link>
+                        </Button>
+                        <Button
+                            style = {{marginLeft: 10}}
+                            variant="secondary"
+                            size="sm"
+                            disabled = {(!(activateLink && !showPopUp))}
+                        >
+                            <Link key={"saveLink"+book?.id}
+                                  onClick={this.PutBook}
+                                  to = {this.props}
+                                  className="saveLink"
+                            >
+                                Save
+                            </Link>
+                        </Button>
+                        <Button style={{float: 'right'}}
+                                variant="secondary"
+                                className='DeleteButton'
+                                size="sm"
+                        >
+                            <Link
+                                onClick={this.deleteBook}
+                                to = {this.props}
+                                className = "deleteLink"
+                            >
+                                Delete
+                            </Link>
+                        </Button>
+                    </Card.Text>
+                </Card.Body>
+            </Card>
         )
     }
 
@@ -214,9 +205,12 @@ export default class BookEditor extends React.Component<Props, State>{
     }
 
     componentDidMount() {
-        const {book, history} = this.props;
+        const {history, state} = this.props;
+        const book = state.book;
         if (book !== undefined && book !== null ) {
             this.setState({
+                book: book,
+                id: book.id,
                 title: book.title,
                 authors: book.authors,
                 publishing: book.publishing,
@@ -257,6 +251,8 @@ export default class BookEditor extends React.Component<Props, State>{
 
     imageSave = (i:Image) => {
         let image: Image[] = [];
+        let pic = arrayToBase64(i.pic);
+        i.pic = pic;
         if(i !== undefined && i !== null) {
             image.push(i);
             this.setState({
@@ -312,6 +308,7 @@ export default class BookEditor extends React.Component<Props, State>{
         e.preventDefault();
         const{id} = this.state;
         const{deleteBook} = this.props;
+        console.log(id)
         if(id !== undefined && id !== null) {
             if(deleteBook !== undefined && deleteBook !== null) {
                 deleteBook(id);

@@ -43,9 +43,9 @@ export default class RouteBook extends React.Component<Props, State>{
                     path="/b/:id"
                 >
                     <BookView
-                        book={book}
                         handler={handler}
                         history={history}
+                        state={location.state}
                     >
                     </BookView>
                 </Route>
@@ -69,7 +69,6 @@ export default class RouteBook extends React.Component<Props, State>{
                         >
                             <Route path="/b/edit/:id" >
                             <BookEditor
-                                book={book}
                                 deleteBook={deleteBook}
                                 put={put}
                                 handler={handler}
