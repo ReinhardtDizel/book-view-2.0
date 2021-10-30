@@ -25,7 +25,7 @@ export default class BookRow extends React.Component<Props, State > {
         const {
             book,
         } = this.props;
-        const base64Image = getBookCover(book);
+        const base64Image = getBookCover(book.images);
         const book_id_key = book.id?book.id:"noId";
         return(
                 <Card
@@ -36,7 +36,9 @@ export default class BookRow extends React.Component<Props, State > {
                         key={book_id_key + "Link"}
                         to={{
                             pathname: `/b/${book.id}`,
-                            search: `?id=${book.id}`
+                            state: {
+                                book:book,
+                            }
                           }}
                         className="linkBook"
                     >

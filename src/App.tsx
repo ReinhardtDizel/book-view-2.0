@@ -5,8 +5,9 @@ import {Book} from "./Models/Book";
 
 import {Col, Container, Row, Button} from "react-bootstrap";
 import RouteBook from "./Routes/BookRoute"
-import {deleteBook, getBookById, getBooks, postBook, putBook} from "./Api/Api";
+import {deleteBook, getBookById, getBooks, postBook, putBook, userLoginRole} from "./Api/Api";
 import BooksTable from "./Components/Book/BooksTable";
+import Registration from "./Components/Registration/Registration";
 
 export interface Props {
     history?:any;
@@ -39,28 +40,42 @@ export default class App extends React.Component<Props , State> {
                                     this.adminTools()
                                 }
                             </Col>
+                            <Col className="UserTools">
+                                {
+                                    this.userTools()
+                                }
+                            </Col>
                         </Row>
                         <Row className="AppBooksRow">
-                                <Route exact={true} path="/" render={ () => (
-                                    <Col className="AppBooksTable" xs={6}>
-                                        <BooksTable
-                                            books={books}
-                                        >
-                                        </BooksTable>
-                                    </Col>
-                                )}/>
+                            <Route exact={true} path="/"
+                                   render={ () => (
+                                        <Col className="AppBooksTable" xs={6}>
+                                            <BooksTable
+                                                books={books}
+                                            >
+                                            </BooksTable>
+                                        </Col>
+                                   )}/>
                             <Route path="/b/"
-                                             render={ () => (
-                                                 <RouteBook
-                                                     book={book}
-                                                     handler={this.getData}
-                                                     deleteBook={this.deleteBook}
-                                                     put={this.PutBook}
-                                                     history={this.props.history}
-                                                     location={this.props.location}
-                                                     >
-                                                 </RouteBook>
-                                             )}/>
+                                   render={ () => (
+                                         <RouteBook
+                                             book={book}
+                                             handler={this.getData}
+                                             deleteBook={this.deleteBook}
+                                             put={this.PutBook}
+                                             history={this.props.history}
+                                             location={this.props.location}
+                                             >
+                                         </RouteBook>
+                                   )}/>
+                            <Route exact={true} path="/registration"
+                                   render={ () => (
+                                       <Registration
+                                           history={this.props.history}
+                                           location={this.props.location}
+                                       >
+                                       </Registration>
+                                   )}/>
                         </Row>
                     </Container>
                 </Switch>
@@ -72,8 +87,8 @@ export default class App extends React.Component<Props , State> {
     }
 
     adminTools = () => {
-        return (
-            <Row xs={1} md={1} className="g-5">
+        if (userLoginRole() === "admin") {
+            return (
                 <Button
                     className='AdminAddBook'
                     size="sm"
@@ -81,16 +96,36 @@ export default class App extends React.Component<Props , State> {
                 >
                     <Link
                         to={{
-                            pathname:`/b/edit/new`,
-                            state:  { activateLink: true, bookId:undefined},
+                            pathname: `/b/edit/new`,
+                            state: {activateLink: true, bookId: undefined},
                             hash: 'addBook',
                         }}
-                        className = "addLink"
+                        className="addLink"
                     >
-                        add Book
+                        add new Book
                     </Link>
                 </Button>
-            </Row>
+            )
+        }
+    }
+
+    userTools = () => {
+        return (
+            <Button
+                style={{float: 'right'}}
+                className='RegistrationButton'
+                size="sm"
+                variant="Secondary"
+            >
+                <Link
+                    to={{
+                        pathname: `/registration`
+                    }}
+                    className="addLink"
+                >
+                    Submit
+                </Link>
+            </Button>
         )
     }
 

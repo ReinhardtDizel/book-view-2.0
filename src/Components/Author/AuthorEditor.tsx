@@ -19,7 +19,6 @@ interface Props {
 
 interface State {
     validate: boolean;
-    hasError: any;
     author?: Author;
     bookId: string | null;
     arrayId: number | null;
@@ -39,7 +38,6 @@ export default class AuthorEditor extends React.Component<Props, State> {
             arrayId: null,
             bookId: null,
             validate: false,
-            hasError: null,
             author: undefined,
             id: undefined,
             bio: "",
@@ -57,6 +55,8 @@ export default class AuthorEditor extends React.Component<Props, State> {
     }
     render() {
         const {bookId} = this.state;
+        const {state} = this.props;
+        const book = state.book;
         return (
             <Col xl ='auto' sm = 'auto' lg = '3' md = 'auto' xs = 'auto' xxl = 'auto'>
                 <Card className={'AuthorEditorCard-1'}>
@@ -75,7 +75,11 @@ export default class AuthorEditor extends React.Component<Props, State> {
                                 to={{
                                     pathname:`/b/edit/${bookId}`,
                                     search:`?id=${bookId}`,
-                                    state:  { activateLink: true }
+                                    state:  {
+                                        activateLink: true,
+                                        bookId: book.id,
+                                        book: book,
+                                    }
                                 }}
                                className = "backLink"
                             >
@@ -114,8 +118,9 @@ export default class AuthorEditor extends React.Component<Props, State> {
     }
 
     static getDerivedStateFromError(error: any) {
-        return { hasError: error };
+        alert(error);
     }
+
 
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -138,9 +143,6 @@ export default class AuthorEditor extends React.Component<Props, State> {
                     fullName: state.author.name?.fullName,
                 } as any);
             } catch (error) {
-                this.setState({
-                    hasError: error,
-                });
             }
         }
         if(state.bookId) {
@@ -149,9 +151,6 @@ export default class AuthorEditor extends React.Component<Props, State> {
                     bookId: state.bookId,
                 } as any);
             } catch (error) {
-                this.setState({
-                    hasError: error,
-                });
             }
         }
         if(state.arrayId !== undefined && state.arrayId !== null) {
@@ -160,9 +159,6 @@ export default class AuthorEditor extends React.Component<Props, State> {
                     arrayId: state.arrayId,
                 } as any);
             } catch (error) {
-                this.setState({
-                    hasError: error,
-                });
             }
         }
     }
@@ -225,9 +221,6 @@ export default class AuthorEditor extends React.Component<Props, State> {
                     [name]: value,
                 } as any);
             } catch (error) {
-                this.setState({
-                    hasError: error,
-                });
             }
         }
     }

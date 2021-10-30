@@ -77,7 +77,6 @@ export default class ImageEditor extends React.Component<Props, State> {
                                 <Link
                                     to={{
                                         pathname:`/b/edit/${bookId}`,
-                                        search:`?id=${bookId}`,
                                         state:  { activateLink: true }
                                     }}
                                     className = "backLink"

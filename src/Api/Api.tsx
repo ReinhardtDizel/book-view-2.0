@@ -1,15 +1,25 @@
 import axios from "axios";
-import {Book} from "../Models/Book";
 
 export const booksDataURL = "http://localhost:8080/books/";
+export const registrationURL = "http://localhost:8081/registration/";
 
 axios.create({
     responseType: "json",
     headers: {
         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
+        "Access-Control-Allow-Credentials": true,
         "Content-Type": "application/json"
     }
 });
+
+export const submitUser = async (postData:any) => {
+    if(postData !== undefined && postData !== null) {
+        const data = await axios.post(registrationURL, postData);
+        return data;
+    }
+    return "ERROR";
+}
 
 export const getBooks = async () => {
     const data = await axios.get(booksDataURL);
@@ -53,4 +63,8 @@ export const deleteBook = async (id:string) => {
 
 export const simulateNetworkRequest = ():any => {
     return new Promise((resolve) => setTimeout(resolve, 2000));
+}
+
+export const userLoginRole = () => {
+    return "";
 }
