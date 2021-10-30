@@ -7,9 +7,19 @@ axios.create({
     responseType: "json",
     headers: {
         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE",
+        "Access-Control-Allow-Credentials": true,
         "Content-Type": "application/json"
     }
 });
+
+export const submitUser = async (postData:any) => {
+    if(postData !== undefined && postData !== null) {
+        const data = await axios.post(registrationURL, postData);
+        return data;
+    }
+    return "ERROR";
+}
 
 export const getBooks = async () => {
     const data = await axios.get(booksDataURL);
@@ -47,15 +57,6 @@ export const deleteBook = async (id:string) => {
         const wait = await simulateNetworkRequest().then(() => {
         });
         return data;
-    }
-    return "ERROR";
-}
-
-export const submitUser = async (postData:any) => {
-    if(postData !== undefined && postData !== null) {
-
-        console.log(postData);
-
     }
     return "ERROR";
 }

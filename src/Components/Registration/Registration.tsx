@@ -74,58 +74,9 @@ export default class Registration extends React.Component<Props, State> {
                     />
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formGridAddress1">
-                    <Form.Label>Address 1</Form.Label>
-                    <Form.Control
-                        name="addressLine1"
-                        onChange={this.handleInputChange}
-                        placeholder="1234 Main St"
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="formGridAddress2">
-                    <Form.Label>Address 2</Form.Label>
-                    <Form.Control
-                        name="addressLine2"
-                        onChange={this.handleInputChange}
-                        placeholder="Apartment, studio, or floor"
-                    />
-                </Form.Group>
-
-                <Row className="mb-3">
-                    <Form.Group as={Col} controlId="formGridCity">
-                        <Form.Label>City</Form.Label>
-                        <Form.Control
-                            name="city"
-                            onChange={this.handleInputChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridState">
-                        <Form.Label>Country</Form.Label>
-                        <Form.Control
-                            name="country"
-                            onChange={this.handleInputChange}
-                        >
-                        </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group as={Col} controlId="formGridZip">
-                        <Form.Label>Zip</Form.Label>
-                        <Form.Control
-                            name="zip_code"
-                            onChange={this.handleInputChange}
-                        />
-                    </Form.Group>
-                </Row>
-
-                <Form.Group className="mb-3" id="formGridCheckbox">
-                    <Form.Check type="checkbox" label="Check me out" />
-                </Form.Group>
-
                 <Button
                     onClick={this.submitUser}
-                    variant="primary" type="submit"
+                    variant="primary"
                 >
                     Submit
                 </Button>
@@ -134,26 +85,24 @@ export default class Registration extends React.Component<Props, State> {
     }
     handleInputChange = (event:any) => {
         const { name, value } = event.target;
-        if( name === 'email' || 'password' || 'username' || 'addressLine1' || 'addressLine2' || 'city' || 'zip_code') {
+        if(name === 'email' || 'password' || 'username') {
             this.setState({
                 [name]: value,
             } as any);
         }
     }
     submitUser = () => {
-        const {email, password, username, addressLine1, addressLine2, city, zip_code} = this.state;
+        const {email, password, username} = this.state;
         const user: User = {
             email: email,
             username: username,
             password: password,
-            address: {
-                addressLine1: addressLine1,
-                addressLine2: addressLine2,
-                city: city,
-                zip_code: zip_code,
-            },
+            roles: [
+                {
+                    name: "USER_ROLE",
+                }
+            ]
         }
-        alert(user)
-
+        submitUser(user).then()
     }
 }
